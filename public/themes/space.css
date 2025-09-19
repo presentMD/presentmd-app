@@ -1,0 +1,86 @@
+/* space.css - Marp custom theme with NASA space backgrounds */
+
+/* Import Google Fonts for a space feel */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto:wght@400;700&display=swap');
+
+:root {
+  /* Primary Colors */
+  --space-blue: #110e3b;
+  --nebula-accent: #ffacfc;
+  --text-main: #ffffff;
+}
+
+/* Scope all theme rules under .presentmd-scope so they don't leak globally */
+.presentmd-scope :where(section) {
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  color: var(--text-main);
+  background-image: url("/images/NASA-main_image_star-forming_region_carina_nircam_final-5mb.jpeg");
+  /* Photo Credit: NASA, ESA, CSA, and STScI https://www.dpreview.com/files/p/articles/4737758236/main_image_star-forming_region_carina_nircam_final-5mb.jpeg */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 64px 0 #000000bb inset;
+}
+
+.presentmd-scope :where(section.title,
+.presentmd-scope :where(section[data-marpit-pagination="1"])) {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-align: center;
+  font-family: 'Orbitron', 'Roboto', Arial, Helvetica, sans-serif;
+  color: #fff;
+  text-shadow: 0 4px 32px #000c;
+}
+
+/* Target slides that are specifically marked as title or second-slide by the renderer */
+.presentmd-scope :where(section.title-slide) {
+  background-image: url('/images/NASA-cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA1L3BkMzYtMS1nc2ZjXzIwMTcxMjA4X2FyY2hpdmVfZTAwMjA3Ni5qcGc.png');
+  /* Photo Credit: NASA, ESA, CSA, and STScI */
+}
+
+.presentmd-scope :where(section.second-slide) {
+  background-image: url("/images/NASA-main_image_star-forming_region_carina_nircam_final-5mb.jpeg");
+  /* Photo Credit: NASA, ESA, CSA, and STScI */}
+
+.presentmd-scope :where(h1, h2, h3, h4) {
+  font-family: 'Orbitron', 'Roboto', Arial, Helvetica, sans-serif;
+  text-shadow: 0 2px 8px #000c;
+}
+
+/* Optional: Slight box overlay for better contrast on content slides */
+.presentmd-scope :where(section:not(:first-of-type))::before {
+  content: '';
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #110e3be6 40%, #40105ed0 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.presentmd-scope :where(section) > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Code blocks and emphasis */
+.presentmd-scope :where(code, pre) {
+  background: rgba(30, 30, 60, .75);
+  border-radius: 8px;
+  color: #fffbbf;
+}
+
+/* Slide footer, if used */
+.presentmd-scope :where(footer) {
+  font-size: 0.7em;
+  opacity: 0.8;
+  text-align: right;
+  margin-top: 40px;
+}
+
+/* Pagination style */
+.presentmd-scope :where(.marpit-pagination) {
+  color: #fff7;
+  font-family: 'Orbitron', 'Roboto', Arial, Helvetica, sans-serif;
+}

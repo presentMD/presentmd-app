@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import SlideRenderer from "@/components/slides/SlideRenderer";
 import { parseSlides, extractSlideTitles, extractTheme, extractSpeakerNotes, cleanSlideContent, determineSlideClass } from "@/components/slides/utils";
 
+
 interface PreviewProps {
   markdown: string;
   current: number;

@@ -1,0 +1,39 @@
+.presentmd-scope :where(section) {
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  color: var(--text-main);
+  background-image: url("/images/keith-hardy-PP8Escz15d8-unsplash.jpg");
+  /* Photo by Keith Hardy on Unsplash: https://unsplash.com/photos/PP8Escz15d8 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 64px 0 #9f811f44 inset;
+  position: relative;
+  /* subtle tinted overlay if wanted for readability */
+}
+
+.presentmd-scope :where(section.title,
+.presentmd-scope :where(section[data-marpit-pagination="1"])) {
+  background-image: url("/images/wiki-commons-caravan-in-the-desert.jpg");
+  /* Photo by Sergey Pesterev / Wikimedia Commons : https://commons.wikimedia.org/wiki/File:Caravan_in_the_desert.jpg */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-align: center;
+  font-family: 'Montserrat', 'Roboto', Arial, Helvetica, sans-serif;
+  color: var(--mesa);
+  text-shadow: 0 4px 24px #f7e3daaa;
+  position: relative;
+}
+
+/* Target slides marked as title or second-slide by the renderer */
+.presentmd-scope :where(section.title-slide) {
+  background-image: url("/images/wiki-commons-caravan-in-the-desert.jpg");
+  text-align: center;
+  font-family: 'Montserrat', 'Roboto', Arial, Helvetica, sans-serif;
+  color: var(--mesa);
+  text-shadow: 0 4px 24px #f7e3daaa;
+}
+
+.presentmd-scope :where(section.second-slide) {
+  background-image: url("/images/keith-hardy-PP8Escz15d8-unsplash.jpg");
+}

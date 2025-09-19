@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import MarkdownEditor from "./MarkdownEditor";
@@ -54,23 +54,17 @@ const TabbedEditor = ({
           </span>
         )}
       </div>
-
+      
       <div className="flex-1 min-h-0">
         <TabsContent value="markdown" className="h-full mt-0">
-          <MarkdownEditor
-            value={markdown}
-            onChange={onMarkdownChange}
-            className="h-full"
-          />
+          <MarkdownEditor value={markdown} onChange={onMarkdownChange} />
         </TabsContent>
         
         <TabsContent value="theme" className="h-full mt-0">
-          <CssEditor
-            value={customCss}
+          <CssEditor 
+            value={customCss} 
             onChange={onCustomCssChange}
-            currentTheme={currentTheme}
             onThemeChange={onThemeChange}
-            className="h-full"
           />
         </TabsContent>
       </div>

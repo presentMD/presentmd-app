@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { linter, Diagnostic } from "@codemirror/lint";
@@ -14,6 +14,7 @@ export interface MarkdownEditorProps {
 // Simple Marp-aware linting
 function marpLinter(): (view: unknown) => Diagnostic[] {
   return (view) => {
+    // view comes from CodeMirror; use type-safe access via index signature
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const v: any = view;
     const text: string = v.state.doc.toString();
@@ -44,113 +45,131 @@ function marpLinter(): (view: unknown) => Diagnostic[] {
         });
       }
 
-      // Check for title in front matter
-      if (!/\btitle:\s*["'].*["']\s*$/m.test(fm)) {
+      // Metadata-specific validation: title is mandatory and must be non-empty
+      if (!/\btitle:\s*.+/m.test(fm)) {
         diags.push({
           from: 0,
           to: metaLength,
-          message: "Front matter should include a `title: \"Your Title\"`.",
-          severity: "info",
+          message: "Front matter must include a non-empty `title: \"Your Title\"` entry.",
+          severity: "warning",
         });
       }
     }
 
-    // Look for slide separators
-    const separators = [...text.matchAll(/^---\s*$/gm)];
-    if (separators.length === 0 && metaLength > 0) {
-      // Has front matter but no slide separators
-      const pos = metaLength;
+    // Slide separators (ignore ones inside code fences)
+    const lines = text.split(/\n/);
+    let inFence = false;
+    let sepCount = 0;
+    let offset = 0;
+    lines.forEach((line, i) => {
+      if (/^```/.test(line)) inFence = !inFence;
+      if (!inFence && /^---\s*$/.test(line)) sepCount++;
+      offset += line.length + 1;
+    });
+    if (sepCount === 0) {
       diags.push({
-        from: pos,
-        to: pos + 10,
-        message: "Add `---` to separate slides after front matter.",
+        from: 0,
+        to: Math.min(text.length, 3),
+        message: "Add `---` between slides to separate them.",
         severity: "info",
       });
     }
+
+    // Basic per-slide heading check — run on the content after front matter
+    const textAfterMeta = metaLength > 0 ? text.slice(metaLength) : text;
+    const slides = splitSlides(textAfterMeta);
+    let running = metaLength; // offset diagnostics so they point into original text
+    slides.forEach((s, idx) => {
+      const hasHeading = /^\s*#{1,6}\s+/m.test(s);
+      if (!hasHeading) {
+        diags.push({
+          from: running,
+          to: running + Math.min(s.length, 20),
+          message: `Slide ${idx + 1} has no heading. Add a title (e.g., \n# My Title).`,
+          severity: "warning",
+        });
+      }
+      running += s.length + 4; // approx for separators
+    });
 
     return diags;
   };
 }
 
-// Marp/presentation-specific autocomplete
-function marpAutocomplete(context: CompletionContext) {
-  const completions: Completion[] = [
-    // Front matter completions
-    { label: "marp-frontmatter", detail: "Basic Marp front matter", type: "snippet", 
-      apply: "---\ntitle: \"My Presentation\"\ntheme: default\nmarp: true\npaginate: true\nauthor: \"Your Name\"\n---\n\n# " },
-    { label: "marp: true", detail: "Enable Marp", type: "keyword" },
-    { label: "theme: default", detail: "Default theme", type: "keyword" },
-    { label: "theme: gaia", detail: "Gaia theme", type: "keyword" },
-    { label: "theme: uncover", detail: "Uncover theme", type: "keyword" },
-    { label: "theme: space", detail: "Space theme", type: "keyword" },
-    { label: "theme: desert", detail: "Desert theme", type: "keyword" },
-    { label: "paginate: true", detail: "Enable page numbers", type: "keyword" },
-    
-    // Slide separators
-    { label: "slide-separator", detail: "New slide", type: "snippet", apply: "---\n\n## " },
-    
-    // Common slide patterns
-    { label: "title-slide", detail: "Title slide template", type: "snippet", 
-      apply: "# Presentation Title\n\nSubtitle or description\nBy Your Name" },
-    { label: "content-slide", detail: "Content slide with bullets", type: "snippet", 
-      apply: "## Slide Title\n\n- Point 1\n- Point 2\n- Point 3" },
-    { label: "thank-you", detail: "Thank you slide", type: "snippet", 
-      apply: "# Thank You!\n\nQuestions?" },
-    
-    // Special slide classes
-    { label: "<!-- _class: lead -->", detail: "Lead slide class", type: "keyword" },
-    { label: "<!-- _class: invert -->", detail: "Inverted slide class", type: "keyword" },
+function splitSlides(text: string): string[] {
+  const out: string[] = [];
+  const lines = text.split(/\n/);
+  let buf: string[] = [];
+  let inFence = false;
+  for (const line of lines) {
+    if (/^```/.test(line)) inFence = !inFence;
+    if (!inFence && /^---\s*$/.test(line)) {
+      out.push(buf.join("\n"));
+      buf = [];
+    } else {
+      buf.push(line);
+    }
+  }
+  out.push(buf.join("\n"));
+  return out;
+}
+
+function marpCompletions(ctx: CompletionContext) {
+  const word = ctx.matchBefore(/\w[\w-]*$/);
+  const atLineStart = ctx.state.doc.lineAt(ctx.pos).from === ctx.pos;
+
+  const snippets: Completion[] = [
+    {
+      label: "Marp front matter",
+      type: "keyword",
+      apply: "---\nmarp: true\ntheme: default\npaginate: true\n---\n",
+      info: "Insert Marp front matter",
+    },
+    { label: "---", type: "keyword", apply: "---\n", info: "Slide separator" },
+    { label: "class: lead", type: "property", apply: "class: lead\n", info: "Large lead slide" },
+    { label: "backgroundImage:", type: "property", apply: 'backgroundImage: url("")\n', info: "Slide background image" },
+    { label: "style: |", type: "property", apply: "style: |\n  section {\n    /* custom CSS */\n  }\n", info: "Inline style block" },
   ];
 
-  const word = context.matchBefore(/\w*$/);
-  if (!word || (word.from === word.to && !context.explicit)) return null;
-  
-  return {
-    from: word.from,
-    options: completions
-  };
+  if (atLineStart) return { from: ctx.pos, options: snippets };
+  if (!word) return null;
+  return { from: word.from, options: snippets };
 }
 
 export default function MarkdownEditor({ value, onChange, className }: MarkdownEditorProps) {
-  const extensions = useMemo(() => [
-    markdown(),
-    linter(marpLinter()),
-    autocompletion({ override: [marpAutocomplete] }),
-    EditorView.theme({
-      "&": {
-        fontSize: "14px",
-      },
-      ".cm-content": {
-        padding: "16px",
-        minHeight: "400px",
-      },
-      ".cm-focused": {
-        outline: "none",
-      },
-      ".cm-editor": {
-        borderRadius: "8px",
-      },
-      ".cm-scroller": {
-        fontFamily: "ui-monospace, SFMono-Regular, Consolas, monospace",
-      },
-      ".cm-lint-marker-warning": {
-        content: "⚠️",
-      },
-      ".cm-lint-marker-info": {
-        content: "ℹ️",
-      },
-    }),
-  ], []);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const extensions = useMemo(
+    () => [
+      markdown(),
+      linter(marpLinter()),
+      autocompletion({ override: [marpCompletions] }),
+      EditorView.lineWrapping,
+    ],
+    []
+  );
 
   return (
-    <div className={className}>
-      <CodeMirror
-        value={value}
-        onChange={onChange}
-        extensions={extensions}
-        height="100%"
-        placeholder="Start writing your presentation in Markdown..."
-      />
+    <div ref={ref} className={`h-full overflow-hidden ${className}`}>
+      <div className="h-full overflow-auto scrollbar-visible">
+        <CodeMirror
+          value={value}
+          height="100%"
+          width="100%"
+          extensions={extensions}
+          onChange={onChange}
+          basicSetup={{ 
+            highlightActiveLine: true, 
+            lineNumbers: true,
+            foldGutter: true,
+          }}
+          style={{
+            fontSize: '14px',
+            maxWidth: '100%',
+            overflow: 'auto'
+          }}
+        />
+      </div>
     </div>
   );
 }

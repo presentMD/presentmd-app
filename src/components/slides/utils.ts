@@ -1,13 +1,13 @@
 // Check if a slide contains only metadata (no actual content)
 function isMetadataOnlySlide(slide: string): boolean {
   if (!slide.trim()) return true;
-
+  
   // Remove all metadata lines
   const withoutMetadata = slide.replace(/^(theme|title|class|paginate|marp|size|author|date|backgroundColor|backgroundImage|color|footer|header|style|transition|math|headingDivider|inlineSVG|html):\s*.*$/gm, '');
-
+  
   // Remove YAML frontmatter blocks
   const withoutYaml = withoutMetadata.replace(/^---\s*[\s\S]*?---\s*/m, '');
-
+  
   // Check if anything meaningful remains
   return withoutYaml.trim().length === 0;
 }
@@ -15,7 +15,7 @@ function isMetadataOnlySlide(slide: string): boolean {
 // Parse markdown content into individual slides
 export function parseSlides(markdown: string): string[] {
   if (!markdown.trim()) return [''];
-
+  
   // Split on slide separators (---)
   const slides = markdown.split(/^---\s*$/m).map(slide => slide.trim());
 
@@ -24,7 +24,8 @@ export function parseSlides(markdown: string): string[] {
     slides.shift();
   }
 
-  // Second slide may also have only meta data so repeat:
+  // Second slide may also have only meta data so repeat: 
+  // Skip first slide if it contains only metadata
   if (slides.length > 0 && isMetadataOnlySlide(slides[0])) {
     slides.shift();
   }
@@ -41,13 +42,13 @@ export function extractSlideTitles(slides: string[]): string[] {
     if (headingMatch) {
       return headingMatch[1].trim();
     }
-
+    
     // Look for frontmatter title
-    const titleMatch = slide.match(/^title:\s*["']?([^"'\n]+)["']?$/m);
-    if (titleMatch) {
-      return titleMatch[1].trim();
+    const frontmatterMatch = slide.match(/^title:\s*(.+)$/m);
+    if (frontmatterMatch) {
+      return frontmatterMatch[1].replace(/['"]/g, '').trim();
     }
-
+    
     // Fallback to slide number
     return `Slide ${index + 1}`;
   });
@@ -55,37 +56,60 @@ export function extractSlideTitles(slides: string[]): string[] {
 
 // Extract theme from markdown frontmatter
 export function extractTheme(markdown: string): string {
-  const themeMatch = markdown.match(/^theme:\s*["']?([^"'\n]+)["']?$/m);
-  return themeMatch ? themeMatch[1].trim() : 'default';
+  const themeMatch = markdown.match(/^theme:\s*(.+)$/m);
+  return themeMatch ? themeMatch[1].replace(/['"]/g, '').trim() : 'default';
 }
 
-// Extract speaker notes from markdown comments
-export function extractSpeakerNotes(slide: string): string[] {
-  const notes: string[] = [];
-  const commentMatches = slide.matchAll(/<!--\s*(.*?)\s*-->/gs);
+// Extract speaker notes from slide content
+export function extractSpeakerNotes(slideContent: string): string {
+  // Look for HTML comments or "Notes:" sections
+  const notesMatch = slideContent.match(/<!--\s*([\s\S]*?)\s*-->|Notes:\s*(.*?)(?:\n\n|\n---|$)/s);
+  return notesMatch ? (notesMatch[1] || notesMatch[2] || '').trim() : '';
+}
+
+// Clean slide content by removing frontmatter and speaker notes
+export function cleanSlideContent(slideContent: string): string {
+  let cleaned = slideContent;
   
-  for (const match of commentMatches) {
-    const note = match[1].trim();
-    if (note && !note.startsWith('_class:')) {
-      notes.push(note);
-    }
+  // Remove frontmatter (lines starting with key:)
+  cleaned = cleaned.replace(/^(theme|title|class|paginate|marp|size|author|date):\s*.*$/gm, '');
+  
+  // Preserve _class directives while removing other HTML comments
+  cleaned = cleaned.replace(/<!--\s*_class:\s*(.*?)\s*-->/g, (match, className) => {
+    return `<div class="${className}"></div>`;
+  });
+
+  // Remove other HTML comments
+  cleaned = cleaned.replace(/<!--(?!\s*_class:).*?-->/gs, '');
+  
+  // Remove "Notes:" sections
+  cleaned = cleaned.replace(/Notes:\s*.*?(?=\n\n|\n---|$)/gs, '');
+  
+  // Clean up extra whitespace
+  cleaned = cleaned.replace(/\n{3,}/g, '\n\n').trim();
+  
+  return cleaned;
+}
+
+// Determine a CSS class for a slide based on its first heading.
+// - h1 => 'title-slide'
+// - h2 => 'second-slide'
+// Returns an empty string when no heading is found or no class should be applied.
+export function determineSlideClass(slideContent: string): string {
+  if (!slideContent) return '';
+
+  // Prefer explicit _class directives in HTML comments: <!-- _class: my-class other -->
+  const classDirective = slideContent.match(/<!--\s*_class:\s*([\s\S]*?)\s*-->/i);
+  if (classDirective && classDirective[1]) {
+    // Normalize whitespace and return as class string
+    return classDirective[1].trim().split(/\s+/).join(' ');
   }
-  
-  return notes;
-}
 
-// Clean slide content by removing comments and metadata
-export function cleanSlideContent(slide: string): string {
-  return slide
-    // Remove HTML comments (speaker notes)
-    .replace(/<!--[\s\S]*?-->/g, '')
-    // Remove metadata lines
-    .replace(/^(theme|title|class|paginate|marp|size|author|date|backgroundColor|backgroundImage|color|footer|header|style|transition|math|headingDivider|inlineSVG|html):\s*.*$/gm, '')
-    .trim();
-}
-
-// Determine slide class from comments
-export function determineSlideClass(slide: string): string {
-  const classMatch = slide.match(/<!--\s*_class:\s*([^-]+)\s*-->/);
-  return classMatch ? classMatch[1].trim() : '';
+  // Fallback: determine from first heading (# => title-slide, ## => second-slide)
+  const match = slideContent.match(/^\s*(#{1,6})\s+(.+)$/m);
+  if (!match) return '';
+  const hashes = match[1];
+  if (hashes.length === 1) return 'title-slide';
+  if (hashes.length === 2) return 'second-slide';
+  return '';
 }

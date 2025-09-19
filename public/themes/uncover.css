@@ -1,0 +1,122 @@
+@charset "UTF-8";
+/*!
+ * Marp / Marpit Uncover theme
+ * @theme uncover
+ * @author Yuki Hattori, Roberto Esposito
+ * @auto-scaling true
+ * @size 16:9 1280px 720px
+ * @size 4:3 960px 720px
+ *
+ * Scoped under .presentmd-scope by presentMD so theme styles don't leak.
+ */
+
+:where(.presentmd-scope) {
+
+section {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  display: flex;
+  flex-flow: column nowrap;
+  font-family: "Red Hat Display", "BM Hanna Air", Palatino, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 40px;
+  height: 720px;
+  justify-content: center;
+  line-height: 1.4;
+  padding: 30px 70px;
+  position: relative;
+  text-align: center;
+  width: 1280px;
+  word-wrap: break-word;
+  z-index: 0;
+  --color-background: #fdfcff;
+  --color-background-code: #f1f1f4;
+  --color-background-paginate: rgba(32,34,40,0.05);
+  --color-foreground: #202228;
+  --color-highlight: #009dd5;
+  --color-link: #009dd5;
+  --color-highlight-hover: rgb(8,126,169);
+  --color-highlight-heading: rgb(51,177,221);
+  --color-header: rgba(32,34,40,0.4);
+  --color-header-shadow: rgba(253,252,255,0.8);
+  --color-strong: red;
+  --color-markers: red;
+  --color-quotes: red;
+  --color-quotes-background: rgba(255,0,0,0.07);
+  --color-box-background: rgb(234,243,255);
+}
+
+/* Inverted (dark mode style) */
+section.invert {
+  --color-background: #202228;
+  --color-background-code: #2b2d32;
+  --color-background-paginate: rgba(255,255,255,0.05);
+  --color-foreground: #fff;
+  --color-highlight: #60d0f0;
+  --color-link: #60d0f0;
+  --color-highlight-hover: rgb(135,219,243);
+  --color-highlight-heading: rgb(128,217,243);
+  --color-header: rgba(255,255,255,0.4);
+  --color-header-shadow: rgba(32,34,40,0.8);
+  --color-strong: red;
+  --color-markers: red;
+  --color-quotes: red;
+  --color-quotes-background: rgba(255,0,0,0.07);
+  --color-box-background: rgb(234,243,255);
+}
+
+/* Headings */
+section h1,
+section h2,
+section h3,
+section h4,
+section h5,
+section h6 {
+  margin: 15px 0 30px;
+  font-family: "Red Hat Display", "EB Garamond", Palatino, "CMU Classical Serif", Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-weight: lighter;
+  font-style: italic;
+}
+
+section h1 { font-size: 2em; }
+section h2 { font-size: 1.7em; }
+section h3 { font-size: 1.4em; letter-spacing: 2px; }
+section h4 { font-size: 1.2em; letter-spacing: 2px; }
+section h5 { font-size: 1em; letter-spacing: 1px; }
+section h6 { font-size: 0.8em; letter-spacing: 1px; }
+
+/* Code styling */
+section code {
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  background: var(--color-background-code);
+  color: var(--color-foreground);
+  margin: -0.2em 0.2em 0.2em;
+  padding: 0.2em;
+}
+
+/* Links */
+section a {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+section a:hover {
+  color: var(--color-highlight-hover);
+  text-decoration: underline;
+}
+
+section ul, section ol {
+  text-align: left;
+  margin-top: 0.6em;
+  margin-bottom: 1em;
+}
+
+section blockquote {
+  font-size: 95%;
+  line-height: 1.3;
+  padding: 0 2em;
+  position: relative;
+  z-index: 0;
+}
+
+/* etc. ... (shortened for demonstration – copy full CSS as needed) */
+
+} /* end .presentmd-scope */

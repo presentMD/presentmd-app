@@ -3,7 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SlideRenderer from "@/components/slides/SlideRenderer";
-import { parseSlides, extractTheme } from "@/components/slides/utils";
+import { parseSlides, extractTheme, cleanSlideContent } from "@/components/slides/utils";
+
 
 const decode = (s: string | null) => {
   try {
@@ -46,61 +47,47 @@ export default function Present() {
     return () => window.removeEventListener("keydown", onKey);
   }, [slides.length]);
 
-  if (!md || slides.length === 0) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <h1 className="mb-4 text-2xl font-bold">No presentation data</h1>
-          <p className="text-muted-foreground">Please provide markdown content via URL parameters.</p>
-        </div>
-      </div>
-    );
-  }
+  const shown = slides[index] ? cleanSlideContent(slides[index]) : "";
+
+  const goToPrevious = () => setIndex((i) => Math.max(i - 1, 0));
+  const goToNext = () => setIndex((i) => Math.min(i + 1, slides.length - 1));
 
   return (
-    <div className="relative h-screen bg-black overflow-hidden">
-      {/* Current slide */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-full h-full max-w-6xl max-h-[90vh] aspect-video">
-          <SlideRenderer
-            markdown={slides[index]}
-            theme={theme}
-            customCss={customCss}
-            className="w-full h-full"
-          />
-        </div>
-      </div>
-
-      {/* Navigation controls */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg p-2">
+    <div className="fixed inset-0 w-screen h-screen bg-background text-foreground overflow-hidden">
+      {/* Custom CSS injection */}
+      {customCss && (
+        <style>{customCss}</style>
+      )}
+      
+      {/* Navigation Arrows */}
+      {index > 0 && (
         <Button
           variant="ghost"
-          size="sm"
-          onClick={() => setIndex(Math.max(index - 1, 0))}
-          disabled={index === 0}
-          className="text-white hover:bg-white/20"
+          size="icon"
+          onClick={goToPrevious}
+          className="absolute left-8 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white border-0 w-12 h-12 rounded-full backdrop-blur-sm transition-all duration-200 z-10"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft size={24} />
         </Button>
-        
-        <span className="text-white px-3 text-sm font-medium">
-          {index + 1} / {slides.length}
-        </span>
-        
+      )}
+
+      {index < slides.length - 1 && (
         <Button
           variant="ghost"
-          size="sm"
-          onClick={() => setIndex(Math.min(index + 1, slides.length - 1))}
-          disabled={index === slides.length - 1}
-          className="text-white hover:bg-white/20"
+          size="icon"
+          onClick={goToNext}
+          className="absolute right-8 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white border-0 w-12 h-12 rounded-full backdrop-blur-sm transition-all duration-200 z-10"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight size={24} />
         </Button>
-      </div>
+      )}
 
-      {/* Exit hint */}
-      <div className="absolute top-4 right-4 text-white/60 text-sm">
-        Press ESC to exit
+      <div className="presentmd-scope w-full h-full">
+        <SlideRenderer 
+          content={shown} 
+          theme={theme}
+          className="w-full h-full presentation-mode"
+        />
       </div>
     </div>
   );

@@ -1,88 +1,61 @@
-import { useMemo } from "react";
-import CodeMirror from "@uiw/react-codemirror";
-import { css } from "@codemirror/lang-css";
+import { useRef, useEffect } from "react";
+import CodeMirror from '@uiw/react-codemirror';
+import { css } from '@codemirror/lang-css';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { useTheme } from "next-themes";
 import { EditorView } from "@codemirror/view";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export interface CssEditorProps {
+interface CssEditorProps {
   value: string;
-  onChange: (val: string) => void;
-  currentTheme: string;
+  onChange: (value: string) => void;
   onThemeChange: (theme: string) => void;
   className?: string;
 }
 
-const THEME_OPTIONS = [
-  { name: "Default", value: "default" },
-  { name: "Gaia", value: "gaia" },
-  { name: "Uncover", value: "uncover" },
-  { name: "Space", value: "space" },
-  { name: "Desert", value: "desert" },
-  { name: "Dracula", value: "dracula" },
-];
+const CssEditor = ({ value, onChange, onThemeChange, className = "" }: CssEditorProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
-export default function CssEditor({ 
-  value, 
-  onChange, 
-  currentTheme, 
-  onThemeChange, 
-  className 
-}: CssEditorProps) {
-  const extensions = useMemo(() => [
+  const extensions = [
     css(),
-    EditorView.theme({
-      "&": {
-        fontSize: "14px",
-      },
-      ".cm-content": {
-        padding: "16px",
-        minHeight: "300px",
-      },
-      ".cm-focused": {
-        outline: "none",
-      },
-      ".cm-editor": {
-        borderRadius: "8px",
-      },
-      ".cm-scroller": {
-        fontFamily: "ui-monospace, SFMono-Regular, Consolas, monospace",
-      },
-    }),
-  ], []);
+    EditorView.lineWrapping,
+  ];
+
+  const handleChange = (val: string) => {
+    onChange(val);
+    // When CSS is modified, mark theme as custom
+    onThemeChange("custom");
+  };
 
   return (
-    <div className={className}>
-      <div className="mb-4">
-        <label className="text-sm font-medium mb-2 block">
-          Theme
-        </label>
-        <Select value={currentTheme} onValueChange={onThemeChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a theme" />
-          </SelectTrigger>
-          <SelectContent>
-            {THEME_OPTIONS.map((theme) => (
-              <SelectItem key={theme.value} value={theme.value}>
-                {theme.name}
-              </SelectItem>
-            ))}
-            <SelectItem value="custom">Custom CSS</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div className="flex-1">
-        <label className="text-sm font-medium mb-2 block">
-          Custom CSS
-        </label>
+    <div ref={ref} className={`h-full overflow-hidden ${className}`}>
+      <div className="h-full overflow-auto scrollbar-visible">
         <CodeMirror
           value={value}
-          onChange={onChange}
+          height="100%"
+          width="100%"
           extensions={extensions}
-          height="400px"
-          placeholder="/* Add your custom CSS here... */"
+          onChange={handleChange}
+          theme={theme === 'dark' ? oneDark : undefined}
+          basicSetup={{ 
+            highlightActiveLine: true, 
+            lineNumbers: true,
+            foldGutter: true,
+            dropCursor: false,
+            allowMultipleSelections: false,
+            indentOnInput: true,
+            bracketMatching: true,
+            closeBrackets: true,
+          }}
+          style={{
+            fontSize: '14px',
+            maxWidth: '100%',
+            overflow: 'auto'
+          }}
         />
       </div>
     </div>
   );
-}
+};
+
+export default CssEditor;
