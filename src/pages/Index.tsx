@@ -293,9 +293,173 @@ const Index = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isPresentationMode, slides.length]);
 
+  // Helper function to convert image URL to base64 data
+  const getImageAsBase64 = async (imageUrl: string): Promise<string> => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Error loading image:', error);
+      return '';
+    }
+  };
+
+  // Theme configurations for PowerPoint export
+  const getThemeConfig = (theme: string) => {
+    const themeConfigs = {
+      space: {
+        background: { type: 'solid', color: '#110e3b' },
+        backgroundImage: '/images/NASA-main_image_star-forming_region_carina_nircam_final-5mb.jpeg',
+        titleBackgroundImage: '/images/NASA-cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA1L3BkMzYtMS1nc2ZjXzIwMTcxMjA4X2FyY2hpdmVfZTAwMjA3Ni5qcGc.png',
+        titleColor: '#ffacfc',
+        textColor: '#ffffff',
+        accentColor: '#5c34d6',
+        fontFamily: 'Orbitron',
+        titleFontFamily: 'Orbitron',
+        textFontFamily: 'Roboto',
+        titleFontSize: 52,
+        textFontSize: 24,
+        titleStyle: { bold: true, italic: false },
+        textStyle: { bold: false, italic: false },
+        overlay: {
+          type: 'solid',
+          color: '#110e3b',
+          transparency: 60
+        }
+      },
+      desert: {
+        background: { type: 'solid', color: '#f7e3da' },
+        backgroundImage: '/images/keith-hardy-PP8Escz15d8-unsplash.jpg',
+        titleBackgroundImage: '/images/wiki-commons-caravan-in-the-desert.jpg',
+        titleColor: '#8b4513',
+        textColor: '#5e2c38',
+        accentColor: '#c29240',
+        fontFamily: 'Montserrat',
+        titleFontFamily: 'Montserrat',
+        textFontFamily: 'Roboto',
+        titleFontSize: 52,
+        textFontSize: 24,
+        titleStyle: { bold: true, italic: false },
+        textStyle: { bold: false, italic: false },
+        overlay: {
+          type: 'solid',
+          color: '#f7e3da',
+          transparency: 40
+        }
+      },
+      gaia: {
+        background: { type: 'solid', color: '#fff8e1' },
+        backgroundImage: null, // Gaia uses gradient background
+        titleBackgroundImage: null,
+        titleColor: '#455a64',
+        textColor: '#455a64',
+        accentColor: '#0288d1',
+        fontFamily: 'Lato',
+        titleFontFamily: 'Lato',
+        textFontFamily: 'Lato',
+        titleFontSize: 52,
+        textFontSize: 24,
+        titleStyle: { bold: true, italic: false },
+        textStyle: { bold: false, italic: false },
+        gradient: {
+          type: 'linear',
+          angle: 135,
+          stops: [
+            { position: 0, color: '#fff8e1' },
+            { position: 50, color: 'rgba(136, 136, 136, 0.02)' },
+            { position: 100, color: 'rgba(255, 255, 255, 0.05)' }
+          ]
+        }
+      },
+      uncover: {
+        background: { type: 'solid', color: '#fdfcff' },
+        backgroundImage: null, // Uncover uses solid background
+        titleBackgroundImage: null,
+        titleColor: '#202228',
+        textColor: '#202228',
+        accentColor: '#009dd5',
+        fontFamily: 'Red Hat Display',
+        titleFontFamily: 'Red Hat Display',
+        textFontFamily: 'Red Hat Display',
+        titleFontSize: 52,
+        textFontSize: 24,
+        titleStyle: { bold: false, italic: true },
+        textStyle: { bold: false, italic: false },
+        gradient: {
+          type: 'linear',
+          angle: 135,
+          stops: [
+            { position: 0, color: '#fdfcff' },
+            { position: 100, color: '#f8fafc' }
+          ]
+        }
+      },
+      default: {
+        background: { type: 'solid', color: '#ffffff' },
+        backgroundImage: null,
+        titleBackgroundImage: null,
+        titleColor: '#246',
+        textColor: '#222',
+        accentColor: '#48c',
+        fontFamily: 'Red Hat Display',
+        titleFontFamily: 'Red Hat Display',
+        textFontFamily: 'Red Hat Display',
+        titleFontSize: 52,
+        textFontSize: 24,
+        titleStyle: { bold: true, italic: false },
+        textStyle: { bold: false, italic: false },
+        gradient: {
+          type: 'linear',
+          angle: 135,
+          stops: [
+            { position: 0, color: '#ffffff' },
+            { position: 100, color: '#f8fafc' }
+          ]
+        }
+      }
+    };
+    
+    return themeConfigs[theme] || themeConfigs.default;
+  };
+
   const exportToPowerPoint = async () => {
     try {
+      // Show loading toast
+      toast({
+        title: "Preparing Export",
+        description: "Loading theme assets and generating PowerPoint...",
+      });
+
       const pptx = new PptxGenJS();
+      
+      // Get current theme
+      const theme = currentTheme;
+      const themeConfig = getThemeConfig(theme);
+      
+      // Load background images as base64
+      let backgroundImageData = '';
+      let titleBackgroundImageData = '';
+      
+      try {
+        if (themeConfig.backgroundImage) {
+          backgroundImageData = await getImageAsBase64(themeConfig.backgroundImage);
+        }
+        if (themeConfig.titleBackgroundImage) {
+          titleBackgroundImageData = await getImageAsBase64(themeConfig.titleBackgroundImage);
+        }
+      } catch (error) {
+        console.warn('Could not load background images, using solid colors instead:', error);
+      }
+      
+      // Set presentation properties
+      pptx.defineLayout({ name: 'LAYOUT_16x9', width: 10, height: 5.625 });
+      pptx.layout = 'LAYOUT_16x9';
       
       // Parse slides from markdown using the same logic as preview
       const slides = md.split(/^---\s*$/m).map(slide => slide.trim()).filter(slide => slide.length > 0);
@@ -303,57 +467,162 @@ const Index = () => {
       slides.forEach((slideContent, index) => {
         const slide = pptx.addSlide();
         
-        // Extract title and content
+        // Determine if this is a title slide
+        const isTitleSlide = index === 0 || slideContent.includes('title:');
+        
+        // Set slide background
+        if (backgroundImageData && !isTitleSlide) {
+          // Use background image for content slides
+          slide.background = {
+            type: 'solid',
+            color: themeConfig.background.color
+          };
+          // Add background image as a shape
+          slide.addImage({
+            data: backgroundImageData,
+            x: 0,
+            y: 0,
+            w: 10,
+            h: 5.625,
+            sizing: { type: 'cover', w: 10, h: 5.625 }
+          });
+        } else if (titleBackgroundImageData && isTitleSlide) {
+          // Use title background image for title slides
+          slide.background = {
+            type: 'solid',
+            color: themeConfig.background.color
+          };
+          // Add background image as a shape
+          slide.addImage({
+            data: titleBackgroundImageData,
+            x: 0,
+            y: 0,
+            w: 10,
+            h: 5.625,
+            sizing: { type: 'cover', w: 10, h: 5.625 }
+          });
+        } else if (themeConfig.gradient) {
+          // Use gradient background
+          slide.background = themeConfig.gradient;
+        } else {
+          // Use solid color background
+          slide.background = themeConfig.background;
+        }
+        
+        // Parse slide content more intelligently
         const lines = slideContent.trim().split('\n').filter(line => line.trim());
-  let title = '';
-  const content: string[] = [];
+        let title = '';
+        const content: string[] = [];
+        const bulletPoints: string[] = [];
+        const isFirstSlide = index === 0;
+        
+        // isTitleSlide is already determined above
         
         for (const line of lines) {
+          // Skip frontmatter
+          if (line.startsWith('title:') || line.startsWith('marp:') || line.startsWith('theme:') || line.startsWith('paginate:') || line.startsWith('author:')) {
+            continue;
+          }
+          
           if (line.startsWith('# ')) {
             title = line.replace('# ', '');
           } else if (line.startsWith('## ')) {
             title = line.replace('## ', '');
+          } else if (line.startsWith('### ')) {
+            title = line.replace('### ', '');
           } else if (line.startsWith('- ')) {
-            content.push(line.replace('- ', '• '));
-          } else if (line.trim() && !line.startsWith('title:') && !line.startsWith('marp:') && !line.startsWith('theme:') && !line.startsWith('paginate:') && !line.startsWith('author:')) {
+            bulletPoints.push(line.replace('- ', '• '));
+          } else if (line.startsWith('* ')) {
+            bulletPoints.push(line.replace('* ', '• '));
+          } else if (line.trim() && !line.startsWith('<!--')) {
+            // Skip HTML comments
             content.push(line);
           }
         }
+        
+        // Combine content and bullet points
+        const allContent = [...content, ...bulletPoints];
         
         // Add title if present
         if (title) {
           slide.addText(title, {
             x: 0.5,
-            y: 0.5,
+            y: isTitleSlide ? 1.8 : 0.5,
             w: 9,
-            h: 1,
-            fontSize: 36,
-            bold: true,
-            color: '363636'
+            h: isTitleSlide ? 1.5 : 1,
+            fontSize: isTitleSlide ? themeConfig.titleFontSize + 12 : themeConfig.titleFontSize,
+            bold: themeConfig.titleStyle.bold,
+            italic: themeConfig.titleStyle.italic,
+            color: themeConfig.titleColor,
+            fontFace: themeConfig.titleFontFamily,
+            align: isTitleSlide ? 'center' : 'left',
+            valign: isTitleSlide ? 'middle' : 'top',
+            shadow: {
+              type: 'outer',
+              angle: 45,
+              blur: 2,
+              color: '000000',
+              offset: 1,
+              opacity: 0.3
+            }
           });
         }
         
         // Add content
-        if (content.length > 0) {
-          slide.addText(content.join('\n'), {
+        if (allContent.length > 0) {
+          // Process content to handle basic markdown formatting
+          const processedContent = allContent.map(line => {
+            // Handle bold text
+            line = line.replace(/\*\*(.*?)\*\*/g, '$1');
+            // Handle italic text
+            line = line.replace(/\*(.*?)\*/g, '$1');
+            // Handle links (remove markdown syntax)
+            line = line.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+            return line;
+          }).join('\n');
+
+          slide.addText(processedContent, {
             x: 0.5,
-            y: title ? 2 : 1,
+            y: title ? (isTitleSlide ? 3.8 : 2) : (isTitleSlide ? 2.5 : 1),
             w: 9,
-            h: 5,
-            fontSize: 18,
-            color: '363636'
+            h: title ? (isTitleSlide ? 1.2 : 3) : (isTitleSlide ? 2.5 : 4),
+            fontSize: themeConfig.textFontSize,
+            bold: themeConfig.textStyle.bold,
+            italic: themeConfig.textStyle.italic,
+            color: themeConfig.textColor,
+            fontFace: themeConfig.textFontFamily,
+            align: isTitleSlide ? 'center' : 'left',
+            valign: 'top',
+            lineSpacing: 1.3,
+            bullet: bulletPoints.length > 0 ? true : false
+          });
+        }
+        
+        // Add slide number if not first slide
+        if (!isFirstSlide) {
+          slide.addText(`${index}`, {
+            x: 9.2,
+            y: 5.2,
+            w: 0.5,
+            h: 0.3,
+            fontSize: 14,
+            color: themeConfig.textColor,
+            fontFace: themeConfig.textFontFamily,
+            align: 'right',
+            valign: 'bottom'
           });
         }
       });
       
       // Generate and download
-      await pptx.writeFile({ fileName: "presentation.pptx" });
+      await pptx.writeFile({ fileName: `presentation-${theme}.pptx` });
       
       toast({
         title: "Export Successful",
-        description: "PowerPoint file has been downloaded!",
+        description: `PowerPoint file with ${theme} theme has been downloaded!`,
       });
     } catch (error) {
+      console.error('Export error:', error);
       toast({
         title: "Export Failed",
         description: "There was an error exporting to PowerPoint.",
