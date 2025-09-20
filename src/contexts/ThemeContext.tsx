@@ -24,18 +24,13 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
-    // Check localStorage first, then system preference, default to dark
+    // Check localStorage first, then default to dark for all new users
     const stored = localStorage.getItem('presentmd-theme') as Theme;
     if (stored && (stored === 'dark' || stored === 'light')) {
       return stored;
     }
     
-    // Check system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-      return 'light';
-    }
-    
-    // Default to dark
+    // Default to dark mode for all new users
     return 'dark';
   });
 
