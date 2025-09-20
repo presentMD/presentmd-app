@@ -1,10 +1,13 @@
 # presentMD
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/bc4ec898-915d-4118-a5e4-c433b3048fa6/deploy-status)](https://app.netlify.com/projects/presentmd/deploys)
 
 A tiny story: imagine you have a great idea and ten minutes to turn it into a slide deck. You want to iterate quickly, ask an LLM to generate content, and polish the output — all without wrestling with a heavy slide editor. That’s the problem presentMD was built to solve.
 
-presentMD lets you write slides in plain Markdown, preview them instantly, and present or export them to PowerPoint. It focuses on fast iteration, readable source files (perfect for LLM workflows), and themeable visual styles that won’t interfere with the surrounding UI.
+presentMD lets you write slides in plain Markdown, preview them instantly, and present or export them to PowerPoint. It focuses on fast iteration, readable source files (perfect for LLM workflows), and themeable visual styles that won't interfere with the surrounding UI.
+
+🌐 **Live Project**: [presentmd.app](https://presentmd.app)
 
 Personal note
 

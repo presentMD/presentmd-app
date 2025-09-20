@@ -476,7 +476,6 @@ const Index = () => {
               <span>© 2025 Markdown Presentations</span>
               <span className="hidden sm:inline">•</span>
               <span className="inline-flex items-center gap-1">
-                <span className="w-1 h-1 bg-orange-500 dark:bg-orange-400 rounded-full"></span>
                 Beta Version
               </span>
               <span className="hidden sm:inline">•</span>
@@ -488,8 +487,6 @@ const Index = () => {
               >
                 GitHub
               </a>
-              <span className="hidden sm:inline">•</span>
-              <span>Open Source</span>
             </div>
           </div>
         </footer>
