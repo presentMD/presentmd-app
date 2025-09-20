@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import CodeMirror from '@uiw/react-codemirror';
 import { css } from '@codemirror/lang-css';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { useTheme } from "next-themes";
+import { useTheme } from "@/contexts/ThemeContext";
 import { EditorView } from "@codemirror/view";
 
 interface CssEditorProps {

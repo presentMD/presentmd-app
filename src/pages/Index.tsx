@@ -8,6 +8,7 @@ import SlideRenderer from "@/components/slides/SlideRenderer";
 import { parseSlides, extractTheme, cleanSlideContent, determineSlideClass } from "@/components/slides/utils";
 
 import ThemeSelector from "@/components/ThemeSelector";
+import ThemeModeSwitcher from "@/components/ThemeModeSwitcher";
 import HelpDialog from "@/components/HelpDialog";
 import PptxGenJS from "pptxgenjs";
 
@@ -59,7 +60,7 @@ The future isn't coming — it's already here 🚀
 --- 
 
 # Thak You!
-Please share feedback at [GitHub](https://github.com/ezborgy/presentMD)
+Please share feedback at [GitHub](https://github.com/presentMD/present-md-app)
 `;
 
 // Theme definitions
@@ -236,8 +237,8 @@ const Index = () => {
   }, [currentTheme, isCustomTheme, customCss]);
 
   useEffect(() => {
-    document.title = "presentMD - Markdown to Presentation";
-    const desc = "Let's use Markdown to write our next presentation. Build beautiful slide decks with live preview and presenter mode.";
+    document.title = "presentMD - Markdown to Presentation (Beta)";
+    const desc = "Let's use Markdown to write our next presentation. Build beautiful slide decks with live preview and presenter mode. Currently in beta - feedback welcome!";
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute("content", desc);
     else {
@@ -381,7 +382,7 @@ const Index = () => {
         <header ref={headerRef}>
           {/* Navigation Bar */}
           <nav className="flex items-center justify-between py-4">
-            <div className="flex items-center">
+            <div className="flex items-center gap-3">
                 <h1
                   className="text-2xl font-mono"
                   style={{
@@ -406,10 +407,17 @@ const Index = () => {
                     MD
                   </span>
                 </h1>
+                <div className="relative">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500 dark:bg-orange-600 text-white shadow-lg">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full mr-1.5"></span>
+                    BETA
+                  </span>
+                </div>
             </div>
             
             <div className="flex items-center gap-3">
               <HelpDialog />
+              <ThemeModeSwitcher />
               <ThemeSelector 
                 currentTheme={currentTheme} 
                 onThemeChange={handleThemeChange} 
@@ -467,8 +475,13 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-sm text-muted-foreground">
               <span>© 2025 Markdown Presentations</span>
               <span className="hidden sm:inline">•</span>
+              <span className="inline-flex items-center gap-1">
+                <span className="w-1 h-1 bg-orange-500 dark:bg-orange-400 rounded-full"></span>
+                Beta Version
+              </span>
+              <span className="hidden sm:inline">•</span>
               <a 
-                href="https://github.com/ezborgy/presentMD" 
+                href="https://github.com/presentMD/presentmd-app" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-colors underline underline-offset-4"

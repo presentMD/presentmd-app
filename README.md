@@ -40,7 +40,7 @@ Requirements
 Run locally
 
 ```bash
-git clone https://github.com/ezborgy/presentMD
+git clone https://github.com/presentMD/presentmd-app
 cd presentMD
 npm install
 npm run dev
@@ -93,7 +93,7 @@ Contributing
 
 Contributions welcome. A few suggestions:
 
-- Open an issue or PR at: https://github.com/ezborgy/presentMD
+- Open an issue or PR at: https://github.com/presentMD/presentmd-app
 - Run the app locally and add tests or small fixes on feature branches.
 - Follow the existing TypeScript and Tailwind patterns; run `npm run lint` before submitting.
 
@@ -109,6 +109,6 @@ This project is licensed under the MIT License — see the `LICENSE` file for de
 
 Project
 
-- https://github.com/ezborgy/presentMD
+- https://github.com/presentMD/presentmd-app
 
 Enjoy writing slides as text.

@@ -3,6 +3,8 @@ import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { linter, Diagnostic } from "@codemirror/lint";
 import { autocompletion, CompletionContext, Completion } from "@codemirror/autocomplete";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { useTheme } from "@/contexts/ThemeContext";
 import { EditorView } from "@codemirror/view";
 
 export interface MarkdownEditorProps {
@@ -138,6 +140,7 @@ function marpCompletions(ctx: CompletionContext) {
 
 export default function MarkdownEditor({ value, onChange, className }: MarkdownEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   const extensions = useMemo(
     () => [
@@ -158,6 +161,7 @@ export default function MarkdownEditor({ value, onChange, className }: MarkdownE
           width="100%"
           extensions={extensions}
           onChange={onChange}
+          theme={theme === 'dark' ? oneDark : undefined}
           basicSetup={{ 
             highlightActiveLine: true, 
             lineNumbers: true,
