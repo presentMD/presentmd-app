@@ -60,7 +60,7 @@ The future isn't coming — it's already here 🚀
 --- 
 
 # Thak You!
-Please share feedback at [GitHub](https://github.com/presentMD/present-md-app)
+Please share feedback at [GitHub](https://github.com/presentMD/presentmd-app)
 `;
 
 // Theme definitions
@@ -503,39 +503,76 @@ const Index = () => {
             <style>{customCss}</style>
           )}
           
-          {/* Exit button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={exitPresentationMode}
-            className="absolute top-8 right-8 bg-black/20 hover:bg-black/40 text-white border-0 w-12 h-12 rounded-full backdrop-blur-sm transition-all duration-200 z-10"
-          >
-            <X size={24} />
-          </Button>
-          
-          {/* Navigation Arrows */}
-          {presentationSlideIndex > 0 && (
+          {/* Top Controls */}
+          <div className="absolute top-0 right-0 z-20 p-4">
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setPresentationSlideIndex(i => Math.max(i - 1, 0))}
-              className="absolute left-8 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white border-0 w-12 h-12 rounded-full backdrop-blur-sm transition-all duration-200 z-10"
+              onClick={exitPresentationMode}
+              className="bg-black/20 hover:bg-black/40 text-white border-0 w-10 h-10 rounded-full backdrop-blur-sm transition-all duration-200"
             >
-              <ChevronLeft size={24} />
+              <X size={20} />
             </Button>
-          )}
+          </div>
 
-          {presentationSlideIndex < slides.length - 1 && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setPresentationSlideIndex(i => Math.min(i + 1, slides.length - 1))}
-              className="absolute right-8 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white border-0 w-12 h-12 rounded-full backdrop-blur-sm transition-all duration-200 z-10"
-            >
-              <ChevronRight size={24} />
-            </Button>
-          )}
+          {/* Bottom Navigation Bar */}
+          <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/60 to-transparent p-4">
+            <div className="flex items-center justify-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setPresentationSlideIndex(0)}
+                disabled={presentationSlideIndex === 0}
+                className="text-white/80 hover:text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                First
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setPresentationSlideIndex(i => Math.max(i - 1, 0))}
+                disabled={presentationSlideIndex === 0}
+                className="text-white/80 hover:text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft size={20} />
+              </Button>
+              
+              <div className="flex items-center gap-2 px-4">
+                <span className="text-white/80 text-sm">
+                  {presentationSlideIndex + 1} of {slides.length}
+                </span>
+                <div className="w-32 h-1 bg-white/20 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-white/60 rounded-full transition-all duration-300"
+                    style={{ width: `${((presentationSlideIndex + 1) / slides.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setPresentationSlideIndex(i => Math.min(i + 1, slides.length - 1))}
+                disabled={presentationSlideIndex === slides.length - 1}
+                className="text-white/80 hover:text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight size={20} />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setPresentationSlideIndex(slides.length - 1)}
+                disabled={presentationSlideIndex === slides.length - 1}
+                className="text-white/80 hover:text-white hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Last
+              </Button>
+            </div>
+          </div>
 
+          {/* Main Content Area */}
           <div className="presentmd-scope w-full h-full">
             <SlideRenderer 
               content={cleanSlideContent(slides[presentationSlideIndex] || '')} 
