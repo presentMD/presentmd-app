@@ -12,7 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { HelpCircle, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { trackHelpDialog } from "@/lib/analytics";
 
 const MARP_EXAMPLES = {
   basic: `---
@@ -322,11 +321,6 @@ export default function HelpDialog() {
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
-    if (newOpen) {
-      trackHelpDialog('open');
-    } else {
-      trackHelpDialog('close');
-    }
   };
 
   const copyToClipboard = async (text: string, label: string) => {

@@ -11,16 +11,6 @@ import ThemeSelector from "@/components/ThemeSelector";
 import ThemeModeSwitcher from "@/components/ThemeModeSwitcher";
 import HelpDialog from "@/components/HelpDialog";
 import PptxGenJS from "pptxgenjs";
-import { 
-  trackPageView, 
-  trackPresentationExport, 
-  trackThemeChange, 
-  trackPresentationMode, 
-  trackCustomCSS, 
-  trackHelpDialog, 
-  trackSlideNavigation,
-  trackFeatureUsage 
-} from "@/lib/analytics";
 
 const initialMd = `---
 title: "My Presentation"
@@ -138,7 +128,6 @@ const Index = () => {
   // Handle theme change by updating frontmatter and loading CSS
   const handleThemeChange = async (theme: string) => {
     // Track theme change
-    trackThemeChange(theme, 'slide');
     
     const frontMatterRegex = /^---\n([\s\S]*?)\n---/;
     const match = md.match(frontMatterRegex);
@@ -180,7 +169,6 @@ const Index = () => {
     
     // Track custom CSS usage
     if (css.trim()) {
-      trackCustomCSS('enable');
     }
     
     // Try to detect if CSS matches a known theme
@@ -267,7 +255,6 @@ const Index = () => {
     }
     
     // Track page view
-    trackPageView('home', 'presentMD - Markdown to Presentation');
     // Canonical
     const existingCanonical = document.querySelector('link[rel="canonical"]');
     if (!existingCanonical) {
@@ -280,7 +267,6 @@ const Index = () => {
 
   const enterPresentationMode = () => {
     // Track presentation mode start
-    trackPresentationMode('start', slides.length);
     
     setPresentationSlideIndex(current);
     setIsPresentationMode(true);
@@ -288,7 +274,6 @@ const Index = () => {
 
   const exitPresentationMode = () => {
     // Track presentation mode end
-    trackPresentationMode('end', slides.length);
     
     setIsPresentationMode(false);
   };
@@ -645,7 +630,6 @@ const Index = () => {
       await pptx.writeFile({ fileName: `presentation-${theme}.pptx` });
       
       // Track successful export
-      trackPresentationExport(theme, slides.length);
       
       toast({
         title: "Export Successful",
@@ -747,7 +731,6 @@ const Index = () => {
                 href="https://github.com/presentMD/presentmd-app/discussions"
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => trackFeatureUsage('github_discussions', 'cta_click')}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm font-medium"
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
@@ -759,7 +742,6 @@ const Index = () => {
                 href="https://github.com/presentMD/presentmd-app"
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => trackFeatureUsage('github_repo', 'cta_click')}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-md hover:bg-accent transition-colors text-sm font-medium"
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
@@ -820,7 +802,6 @@ const Index = () => {
                 href="https://github.com/presentMD/presentmd-app" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                onClick={() => trackFeatureUsage('github_repo', 'footer_click')}
                 className="hover:text-foreground transition-colors underline underline-offset-4"
               >
                 GitHub
@@ -830,7 +811,6 @@ const Index = () => {
                 href="https://github.com/presentMD/presentmd-app/discussions" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                onClick={() => trackFeatureUsage('github_discussions', 'footer_click')}
                 className="hover:text-foreground transition-colors underline underline-offset-4"
               >
                 Discussions
