@@ -17,6 +17,27 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <!-- Google Analytics 4 -->
+    <script>
+      // Get Google Analytics ID from environment variable
+      const GA_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
+      
+      if (GA_ID && GA_ID !== 'undefined') {
+        // Load Google Analytics script
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+        document.head.appendChild(script);
+        
+        // Initialize Google Analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', GA_ID);
+        window.gtag = gtag;
+      }
+    </script>
   </head>
 
   <body>

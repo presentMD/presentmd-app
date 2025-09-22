@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { HelpCircle, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { trackHelpDialog } from "@/lib/analytics";
 
 const MARP_EXAMPLES = {
   basic: `---
@@ -319,6 +320,15 @@ export default function HelpDialog() {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const { toast } = useToast();
 
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen) {
+      trackHelpDialog('open');
+    } else {
+      trackHelpDialog('close');
+    }
+  };
+
   const copyToClipboard = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -358,7 +368,7 @@ export default function HelpDialog() {
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <HelpCircle className="w-4 h-4" />
