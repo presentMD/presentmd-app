@@ -44,7 +44,7 @@ Run locally
 
 ```bash
 git clone https://github.com/presentMD/presentmd-app
-cd presentMD
+cd presentmd-app
 npm install
 npm run dev
 
