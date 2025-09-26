@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import TabbedEditor from "@/components/TabbedEditor";
 import Preview from "@/components/Preview";
-import { ChevronLeft, ChevronRight, X, Monitor, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Monitor, Download, RotateCcw } from "lucide-react";
 import SlideRenderer from "@/components/slides/SlideRenderer";
 import { parseSlides, extractTheme, cleanSlideContent, determineSlideClass } from "@/components/slides/utils";
 
@@ -13,54 +13,18 @@ import HelpDialog from "@/components/HelpDialog";
 import PptxGenJS from "pptxgenjs";
 
 const initialMd = `---
-title: "My Presentation"
+title: "Enter Title Here"
 theme: space
 marp: true
 paginate: true
-author: "Jane Doe"
+author: "Your Name"
 ---
 
-# Welcome to My Presentation
+# Enter Title Here
 
-A subtitle for the title slide
-By Jane Doe
+Your subtitle here
+By Your Name
 
-<!-- This is a note for the presenter, it won't show on the slide -->
-
---- 
-
-## Sample Content Slide
-
-- Use **Markdown** to write slides
-- Separate slides with \`---\`
-- Click Present to launch slideshow
-
----
-
-## Slide with Content
-
-- Bullet point 1
-- Bullet point 2
-- **Bold text** and *italic text*
-
---- 
-
-<!-- _class: custom-hero -->
-## Same Slide with _class
-
-- Bullet point 1
-- Bullet point 2
-- **Bold text** and *italic text*
-
---- 
-
-## Final Thought
-The future isn't coming — it's already here 🚀
-
---- 
-
-# Thak You!
-Please share feedback at [GitHub](https://github.com/presentMD/presentmd-app)
 `;
 
 // Theme definitions
@@ -84,6 +48,31 @@ const Index = () => {
   
   const { toast } = useToast();
 
+  // Function to reset to clean presentation
+  const resetToCleanPresentation = () => {
+    setMd(initialMd);
+    toast({
+      title: "Reset",
+      description: "Reset to basic 1-slide template",
+    });
+  };
+
+  // Auto-detect when content is cleared and reset to clean presentation
+  useEffect(() => {
+    const trimmedMd = md.trim();
+    const isEmpty = trimmedMd === '' || trimmedMd === '---' || trimmedMd === '---\n---';
+    const isInitialContent = md === initialMd;
+    
+    // Only auto-reset if content is empty AND it's not already the initial content
+    if (isEmpty && !isInitialContent) {
+      setMd(initialMd);
+      toast({
+        title: "Auto-Reset",
+        description: "Content was cleared, reset to clean presentation",
+      });
+    }
+  }, [md]);
+
   // Extract current theme from markdown frontmatter
   const currentTheme = useMemo(() => {
     const themeMatch = md.match(/^theme:\s*(.+)$/m);
@@ -94,17 +83,66 @@ const Index = () => {
   const slides = useMemo(() => parseSlides(md), [md]);
   const presentationTheme = useMemo(() => extractTheme(md), [md]);
 
-  // Load theme CSS content
+  // Validate URL for security
+  const isValidUrl = (url: string): boolean => {
+    try {
+      const parsed = new URL(url);
+      return ['http:', 'https:'].includes(parsed.protocol);
+    } catch {
+      return false;
+    }
+  };
+
+  // Load theme CSS content with security validation
   const loadThemeCss = async (themeName: string): Promise<string> => {
     try {
       if (themeName.startsWith('http')) {
-        const response = await fetch(themeName);
-        return await response.text();
+        // Validate URL before fetching
+        if (!isValidUrl(themeName)) {
+          throw new Error('Invalid URL format');
+        }
+        
+        // Check for allowed domains (whitelist approach)
+        const allowedDomains = [
+          'cdn.jsdelivr.net',
+          'unpkg.com',
+          'github.com',
+          'raw.githubusercontent.com'
+        ];
+        
+        const url = new URL(themeName);
+        if (!allowedDomains.some(domain => url.hostname.includes(domain))) {
+          throw new Error('Domain not allowed for external themes');
+        }
+        
+        const response = await fetch(themeName, {
+          mode: 'cors',
+          credentials: 'omit'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to load external theme: ${response.status}`);
+        }
+        
+        const css = await response.text();
+        
+        // Basic CSS validation (prevent malicious CSS)
+        if (css.includes('javascript:') || css.includes('expression(')) {
+          throw new Error('Invalid CSS content detected');
+        }
+        
+        return css;
       }
       
-      const response = await fetch(`/themes/${themeName}.css`);
+      // Only allow local theme files
+      const sanitizedThemeName = themeName.replace(/[^a-zA-Z0-9-_]/g, '');
+      if (sanitizedThemeName !== themeName) {
+        throw new Error('Invalid theme name');
+      }
+      
+      const response = await fetch(`/themes/${sanitizedThemeName}.css`);
       if (!response.ok) {
-        throw new Error(`Failed to load theme: ${themeName}`);
+        throw new Error(`Failed to load theme: ${sanitizedThemeName}`);
       }
       return await response.text();
     } catch (error) {
@@ -769,9 +807,6 @@ const Index = () => {
           {/* Editor Panel */}
           <div className="w-1/2 min-w-0">
             <div className="rounded-xl border bg-card/50 backdrop-blur-sm p-4 shadow-lg transition-all duration-300 hover:shadow-xl h-full flex flex-col">
-              <div className="flex items-center gap-2 mb-3 flex-shrink-0">
-                <span className="text-sm text-muted-foreground">Editor</span>
-              </div>
               <div className="flex-1 min-h-0 overflow-hidden">
                 <TabbedEditor 
                   markdown={md} 
@@ -782,6 +817,7 @@ const Index = () => {
                   onCustomCssChange={handleCustomCssChange}
                   isCustomTheme={isCustomTheme}
                   baseThemeName={baseThemeName}
+                  onReset={resetToCleanPresentation}
                 />
               </div>
             </div>
