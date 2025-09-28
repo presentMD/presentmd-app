@@ -1,67 +1,172 @@
 /*!
- * Marp default theme.
+ * Marp default theme - Clean Wave Design
  * @theme default
  * @auto-scaling true
  * @size 16:9 1280px 720px
  * @size 4:3 960px 720px
  */
 
-/* Github Markdown base style, reset, and colors */
+/* Import Neue Haas Grotesk Text Pro font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 /* Scope theme under .presentmd-scope */
 .presentmd-scope section {
-  --h1-color: #246;
+  --h1-color: #ffffff;
   --header-footer-color: rgba(102, 102, 102, 0.75);
-  --heading-strong-color: #48c;
-  --paginate-color: #777;
+  --heading-strong-color: #000000;
+  --paginate-color: #666;
   display: block;
   place-content: safe center center;
-  font-size: 29px;
-  font-family: "Red Hat Display", "BM Hanna Air", Palatino, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  height: 720px;
-  width: 1280px;
-  padding: 78.5px;
-  color: #222;
-  background: #fff;
-  line-height: 1.5;
+  font-size: clamp(16px, 2.5vw, 29px);
+  font-family: "Inter", "Neue Haas Grotesk Text Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  height: 100%;
+  width: 100%;
+  padding: clamp(20px, 5vw, 78.5px);
+  color: #000000;
+  background: #ffffff;
+  line-height: 1.6;
+  position: relative;
+  box-sizing: border-box;
 }
 
-/* Headings */
-.presentmd-scope section h1,
-.presentmd-scope section h2,
-.presentmd-scope section h3,
-.presentmd-scope section h4,
-.presentmd-scope section h5,
-.presentmd-scope section h6 {
+/* Title slide with wave background */
+.presentmd-scope section.title-slide {
+  background: #f5f5f5;
+  background-image: url('/images/wave-title-slide.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.presentmd-scope section.title-slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(128, 128, 128, 0.25);
+  z-index: 1;
+}
+
+.presentmd-scope section.title-slide > * {
+  position: relative;
+  z-index: 2;
+  color: #ffffff;
+}
+
+.presentmd-scope section.title-slide h1 {
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.presentmd-scope section.title-slide h2,
+.presentmd-scope section.title-slide h3,
+.presentmd-scope section.title-slide h4,
+.presentmd-scope section.title-slide h5,
+.presentmd-scope section.title-slide h6 {
+  color: #ffffff;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.presentmd-scope section.title-slide p {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Regular slides - clean white background with black text */
+.presentmd-scope section:not(.title-slide) {
+  background: #ffffff;
+  color: #000000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  padding-top: clamp(40px, 8vw, 80px);
+  padding-left: clamp(40px, 8vw, 80px);
+  padding-right: clamp(40px, 8vw, 80px);
+  padding-bottom: clamp(40px, 8vw, 80px);
+}
+
+/* Headings for regular slides */
+.presentmd-scope section:not(.title-slide) h1,
+.presentmd-scope section:not(.title-slide) h2,
+.presentmd-scope section:not(.title-slide) h3,
+.presentmd-scope section:not(.title-slide) h4,
+.presentmd-scope section:not(.title-slide) h5,
+.presentmd-scope section:not(.title-slide) h6 {
   border-bottom: none;
-  font-weight: normal;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: clamp(20px, 4vw, 40px);
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  text-align: left;
 }
-.presentmd-scope section h1 {
-  color: var(--h1-color);
-  font-size: 1.6em;
+
+.presentmd-scope section:not(.title-slide) h1 {
+  font-size: clamp(1.8em, 4vw, 2.2em);
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 0.3em;
+  line-height: 1.2;
 }
-.presentmd-scope section h2 {
-  font-size: 1.3em;
+
+.presentmd-scope section:not(.title-slide) h2 {
+  font-size: clamp(1.4em, 3.5vw, 1.8em);
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.3;
 }
-.presentmd-scope section h3 {
-  font-size: 1.1em;
+
+.presentmd-scope section:not(.title-slide) h3 {
+  font-size: clamp(1.2em, 3vw, 1.4em);
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.3;
 }
-.presentmd-scope section h4 {
-  font-size: 1.05em;
+
+.presentmd-scope section:not(.title-slide) h4 {
+  font-size: clamp(1.1em, 2.5vw, 1.2em);
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.4;
 }
-.presentmd-scope section h5 {
-  font-size: 1em;
+
+.presentmd-scope section:not(.title-slide) h5 {
+  font-size: clamp(1em, 2.2vw, 1.1em);
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.4;
 }
-.presentmd-scope section h6 {
-  font-size: 0.9em;
+
+.presentmd-scope section:not(.title-slide) h6 {
+  font-size: clamp(0.9em, 2vw, 1em);
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.4;
 }
-.presentmd-scope section h1 strong,
-.presentmd-scope section h2 strong,
-.presentmd-scope section h3 strong,
-.presentmd-scope section h4 strong,
-.presentmd-scope section h5 strong,
-.presentmd-scope section h6 strong {
-  font-weight: inherit;
-  color: var(--heading-strong-color);
+
+.presentmd-scope section:not(.title-slide) h1 strong,
+.presentmd-scope section:not(.title-slide) h2 strong,
+.presentmd-scope section:not(.title-slide) h3 strong,
+.presentmd-scope section:not(.title-slide) h4 strong,
+.presentmd-scope section:not(.title-slide) h5 strong,
+.presentmd-scope section:not(.title-slide) h6 strong {
+  font-weight: 700;
+  color: #000000;
 }
 /* Remove bottom margin from last content and top on first */
 .presentmd-scope section > *:last-child,
@@ -73,28 +178,187 @@
   margin-top: 0;
 }
 
-/* Code blocks */
-.presentmd-scope section pre {
-  border: 1px solid #ddd;
-  line-height: 1.15;
+/* Code blocks for regular slides */
+.presentmd-scope section:not(.title-slide) pre {
+  border: 1px solid #e0e0e0;
+  line-height: 1.4;
   overflow: visible;
-  background: #f6f8fa;
+  background: #f8f9fa;
   padding: 1em;
+  border-radius: 6px;
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", monospace;
 }
-.presentmd-scope section code {
-  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
-  background: #f6f8fa;
-  color: #222;
-  padding: 0.15em 0.3em;
+
+.presentmd-scope section:not(.title-slide) code {
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", monospace;
+  background: #f8f9fa;
+  color: #000000;
+  padding: 0.2em 0.4em;
   border-radius: 4px;
+  font-size: 0.9em;
 }
-/* Links */
-.presentmd-scope section a {
-  color: #267cb9;
-  text-decoration: underline;
+
+/* Links for regular slides */
+.presentmd-scope section:not(.title-slide) a {
+  color: #0066cc;
+  text-decoration: none;
+  border-bottom: 1px solid #0066cc;
+  transition: color 0.2s ease;
 }
-.presentmd-scope section a:hover {
-  color: #174e7a;
+
+.presentmd-scope section:not(.title-slide) a:hover {
+  color: #004499;
+  border-bottom-color: #004499;
+}
+
+/* Paragraphs for regular slides */
+.presentmd-scope section:not(.title-slide) p {
+  color: #000000;
+  font-weight: 400;
+  line-height: 1.6;
+  margin-bottom: clamp(12px, 2.5vw, 24px);
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  text-align: left;
+}
+
+/* Lists for regular slides */
+.presentmd-scope section:not(.title-slide) ul,
+.presentmd-scope section:not(.title-slide) ol {
+  color: #000000;
+  margin-bottom: clamp(12px, 2.5vw, 24px);
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: clamp(20px, 4vw, 40px);
+  width: 100%;
+  text-align: left;
+}
+
+.presentmd-scope section:not(.title-slide) li {
+  color: #000000;
+  margin-bottom: clamp(8px, 1.5vw, 16px);
+  line-height: 1.5;
+}
+
+/* Responsive design for different viewing modes */
+/* Thumbnail mode - smaller text and padding */
+.presentmd-scope section:not(.title-slide)[data-thumbnail] {
+  font-size: clamp(8px, 1.5vw, 12px);
+  padding: clamp(8px, 2vw, 16px);
+  padding-top: clamp(12px, 3vw, 24px);
+  padding-left: clamp(12px, 3vw, 24px);
+  padding-right: clamp(12px, 3vw, 24px);
+  padding-bottom: clamp(12px, 3vw, 24px);
+}
+
+.presentmd-scope section:not(.title-slide)[data-thumbnail] h1 {
+  font-size: clamp(1.2em, 2.5vw, 1.5em);
+  margin-bottom: clamp(8px, 2vw, 16px);
+}
+
+.presentmd-scope section:not(.title-slide)[data-thumbnail] h2 {
+  font-size: clamp(1em, 2vw, 1.2em);
+  margin-bottom: clamp(6px, 1.5vw, 12px);
+}
+
+.presentmd-scope section:not(.title-slide)[data-thumbnail] h3 {
+  font-size: clamp(0.9em, 1.8vw, 1.1em);
+  margin-bottom: clamp(6px, 1.5vw, 12px);
+}
+
+/* Preview mode - medium sizing */
+.presentmd-scope section:not(.title-slide)[data-preview] {
+  font-size: clamp(14px, 2vw, 24px);
+  padding: clamp(24px, 4vw, 48px);
+  padding-top: clamp(32px, 6vw, 64px);
+  padding-left: clamp(32px, 6vw, 64px);
+  padding-right: clamp(32px, 6vw, 64px);
+  padding-bottom: clamp(32px, 6vw, 64px);
+}
+
+/* Presentation mode - full sizing */
+.presentmd-scope section:not(.title-slide)[data-presentation] {
+  font-size: clamp(18px, 2.5vw, 32px);
+  padding: clamp(32px, 6vw, 80px);
+  padding-top: clamp(40px, 8vw, 80px);
+  padding-left: clamp(40px, 8vw, 80px);
+  padding-right: clamp(40px, 8vw, 80px);
+  padding-bottom: clamp(40px, 8vw, 80px);
+}
+
+/* Ensure title slide works in all modes */
+.presentmd-scope section.title-slide[data-thumbnail] {
+  min-height: auto;
+  padding: clamp(8px, 2vw, 16px);
+  font-size: clamp(8px, 1.5vw, 12px);
+}
+
+.presentmd-scope section.title-slide[data-preview] {
+  min-height: 50vh;
+  padding: clamp(16px, 3vw, 40px);
+  font-size: clamp(14px, 2vw, 24px);
+}
+
+.presentmd-scope section.title-slide[data-presentation] {
+  min-height: 100vh;
+  padding: clamp(24px, 4vw, 60px);
+  font-size: clamp(18px, 2.5vw, 32px);
+}
+
+/* Additional responsive improvements */
+@media (max-width: 768px) {
+  .presentmd-scope section:not(.title-slide) {
+    font-size: clamp(14px, 3vw, 20px);
+    padding: clamp(20px, 5vw, 40px);
+    padding-top: clamp(24px, 6vw, 48px);
+    padding-left: clamp(24px, 6vw, 48px);
+    padding-right: clamp(24px, 6vw, 48px);
+    padding-bottom: clamp(24px, 6vw, 48px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) h1 {
+    font-size: clamp(1.5em, 5vw, 2em);
+    margin-bottom: clamp(16px, 3vw, 32px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) h2 {
+    font-size: clamp(1.2em, 4vw, 1.5em);
+    margin-bottom: clamp(12px, 2.5vw, 24px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) ul,
+  .presentmd-scope section:not(.title-slide) ol {
+    padding-left: clamp(16px, 3vw, 32px);
+  }
+}
+
+@media (max-width: 480px) {
+  .presentmd-scope section:not(.title-slide) {
+    font-size: clamp(12px, 4vw, 16px);
+    padding: clamp(16px, 6vw, 32px);
+    padding-top: clamp(20px, 7vw, 40px);
+    padding-left: clamp(20px, 7vw, 40px);
+    padding-right: clamp(20px, 7vw, 40px);
+    padding-bottom: clamp(20px, 7vw, 40px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) h1 {
+    font-size: clamp(1.3em, 6vw, 1.8em);
+    margin-bottom: clamp(12px, 4vw, 24px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) h2 {
+    font-size: clamp(1.1em, 5vw, 1.3em);
+    margin-bottom: clamp(10px, 3vw, 20px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) ul,
+  .presentmd-scope section:not(.title-slide) ol {
+    padding-left: clamp(12px, 4vw, 24px);
+  }
 }
 
 /* Images */

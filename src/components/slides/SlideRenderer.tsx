@@ -6,36 +6,6 @@ import { cn } from '@/lib/utils';
 
 // Theme configs. Add more themes as desired!
 const themeConfigs = {
-  dracula: {
-    root: 'bg-gradient-to-br from-[#282a36] to-[#44475a] text-[#f8f8f2] font-sans',
-    heading: 'font-bold text-pink-400',
-    paragraph: 'text-lg mb-5',
-    code: 'bg-[#44475a] text-yellow-300 px-2 py-1 rounded',
-    pre: 'bg-[#44475a] rounded-lg p-4 mb-6 text-yellow-200',
-    blockquote: 'border-l-4 border-pink-400 bg-[#343746] pl-6 italic my-6 text-base md:text-lg',
-    list: 'list-disc pl-6 text-base',
-    listItem: 'mb-1',
-  },
-  gaia: {
-    root: 'bg-gradient-to-br from-green-50 to-emerald-100 text-emerald-800 font-sans',
-    heading: 'font-bold text-emerald-600',
-    paragraph: 'text-lg mb-5',
-    code: 'bg-emerald-100 text-green-900 px-2 py-1 rounded',
-    pre: 'bg-emerald-100 rounded-lg p-4 mb-6',
-    blockquote: 'border-l-4 border-emerald-400 bg-green-50 pl-6 italic my-6 text-base md:text-lg',
-    list: 'list-disc pl-6 text-base',
-    listItem: 'mb-1',
-  },
-  uncover: {
-    root: 'bg-gradient-to-br from-slate-100 to-zinc-200 text-zinc-900 font-sans',
-    heading: 'font-bold text-sky-700',
-    paragraph: 'text-lg mb-5',
-    code: 'bg-slate-200 text-sky-800 px-2 py-1 rounded',
-    pre: 'bg-slate-200 rounded-lg p-4 mb-6',
-    blockquote: 'border-l-4 border-sky-400 bg-blue-50 pl-6 italic my-6 text-base md:text-lg',
-    list: 'list-disc pl-6 text-base',
-    listItem: 'mb-1',
-  },
   space: {
     root: 'text-white font-sans px-8 py-8 relative min-h-full',
     heading: 'font-bold text-[#ffacfc] font-orbitron tracking-wide drop-shadow-md mb-3 mt-0',
@@ -66,14 +36,15 @@ const themeConfigs = {
     link: 'underline text-[#c29240] hover:text-[#9f811f]',
   },
   default: {
-    root: 'bg-white text-zinc-900 font-sans',
-    heading: 'font-bold text-blue-800',
-    paragraph: 'text-lg mb-5',
-    code: 'bg-gray-100 text-zinc-800 px-2 py-1 rounded',
-    pre: 'bg-gray-50 rounded-lg p-4 mb-6',
-    blockquote: 'border-l-4 border-blue-300 bg-blue-50 pl-6 italic my-6 text-base md:text-lg',
-    list: 'list-disc pl-6 text-base',
-    listItem: 'mb-1',
+    root: 'bg-white text-black font-sans',
+    heading: 'font-semibold text-black',
+    paragraph: 'text-lg mb-5 text-black',
+    code: 'bg-gray-100 text-black px-2 py-1 rounded font-mono',
+    pre: 'bg-gray-50 rounded-lg p-4 mb-6 font-mono',
+    blockquote: 'border-l-4 border-gray-300 bg-gray-50 pl-6 italic my-6 text-base md:text-lg text-black',
+    list: 'list-disc pl-6 text-base text-black',
+    listItem: 'mb-1 text-black',
+    link: 'text-blue-600 hover:text-blue-800 underline',
   },
 };
 
@@ -135,6 +106,11 @@ export default function SlideRenderer({ content, className = '', theme = default
   // Load CSS theme file for space theme
   const shouldLoadSpaceTheme = t === 'space';
   
+  // Determine viewing mode based on className
+  const isThumbnail = className?.includes('thumbnail') || className?.includes('scale');
+  const isPresentation = className?.includes('presentation-mode');
+  const isPreview = !isThumbnail && !isPresentation;
+  
   const rootClass = cn(
     themeConfigs[t].root, 
     className?.includes('presentation-mode') ? "p-16 flex flex-col justify-center h-full w-full" : "p-8 flex flex-col justify-center h-full w-full",
@@ -146,6 +122,9 @@ export default function SlideRenderer({ content, className = '', theme = default
     <section 
       className={rootClass}
       data-marp-theme={shouldLoadSpaceTheme ? 'space' : undefined}
+      data-thumbnail={isThumbnail ? 'true' : undefined}
+      data-preview={isPreview ? 'true' : undefined}
+      data-presentation={isPresentation ? 'true' : undefined}
     >
       {shouldLoadSpaceTheme && (
         <style>

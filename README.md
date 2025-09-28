@@ -30,7 +30,7 @@ Quick tour
 - Authoring: Create slides using Markdown. Split slides with `---` and use frontmatter for metadata (title, theme, author, paginate).
 - Preview: Live thumbnails, highlighting of the current slide, and automatic scrolling keep the visual context synced while you edit.
 - Speaker notes: Add notes inside HTML comments; they’ll appear in the presenter panel but not on slides.
-- Themes: pick from built-in themes (Default, Gaia, Uncover, Space, Desert, Dracula) or add your own CSS under `public/themes/`.
+- Themes: pick from built-in themes (Default, Space, Desert) or add your own CSS under `public/themes/`.
 - Export: click the header button to generate a `.pptx` version of your slides.
 
 Quickstart
@@ -90,7 +90,7 @@ Developers: structure and code pointers
 - Tech stack: React + TypeScript + Vite + Tailwind.
 - Markdown rendering: `react-markdown` with `remark-gfm`.
 - Slide logic: `src/components/slides/*` contains renderer and utilities for parsing slides, extracting frontmatter, and cleaning content.
-- Themes: `public/themes/*.css` — space, desert, gaia, uncover, default, dracula.
+- Themes: `public/themes/*.css` — default, space, desert.
 
 Contributing
 

@@ -11,17 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Palette, Check, Globe } from "lucide-react";
 
-const OFFICIAL_THEMES = [
+const AVAILABLE_THEMES = [
   { name: "Default", value: "default", url: "@/themes/default.css" },
-  { name: "Gaia", value: "gaia", url: "@/themes/gaia.css" },
-  { name: "Uncover", value: "uncover", url: "@/themes/uncover.css" },
-];
-
-const COMMUNITY_THEMES = [
-  { name: "Dracula", value: "dracula", url: "@/themes/dracula.css" },
-];
-
-const OUR_THEMES = [
   { name: "Space", value: "space", url: "@/themes/space.css" },
   { name: "Desert", value: "desert", url: "@/themes/desert.css" },
 ];
@@ -36,14 +27,8 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
   const [showCustomInput, setShowCustomInput] = useState(false);
 
   const getCurrentThemeName = () => {
-  const our = OUR_THEMES.find(t => t.value === currentTheme);
-  if (our) return our.name;
-
-  const official = OFFICIAL_THEMES.find(t => t.value === currentTheme);
-  if (official) return official.name;
-
-  const community = COMMUNITY_THEMES.find(t => t.value === currentTheme);
-  if (community) return community.name;
+    const theme = AVAILABLE_THEMES.find(t => t.value === currentTheme);
+    if (theme) return theme.name;
 
     if (currentTheme.startsWith("http")) return "Custom Theme";
     return currentTheme;
@@ -72,36 +57,8 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         
-        <DropdownMenuLabel className="text-xs text-muted-foreground">Our Themes</DropdownMenuLabel>
-        {OUR_THEMES.map((theme) => (
-          <DropdownMenuItem
-            key={theme.value}
-            onClick={() => onThemeChange(theme.value)}
-            className="flex items-center justify-between"
-          >
-            <span>{theme.name}</span>
-            {currentTheme === theme.value && <Check className="w-4 h-4 text-primary" />}
-          </DropdownMenuItem>
-        ))}
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuLabel className="text-xs text-muted-foreground">Official Themes</DropdownMenuLabel>
-        {OFFICIAL_THEMES.map((theme) => (
-          <DropdownMenuItem
-            key={theme.value}
-            onClick={() => onThemeChange(theme.value)}
-            className="flex items-center justify-between"
-          >
-            <span>{theme.name}</span>
-            {currentTheme === theme.value && <Check className="w-4 h-4 text-primary" />}
-          </DropdownMenuItem>
-        ))}
-        
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuLabel className="text-xs text-muted-foreground">Community Themes</DropdownMenuLabel>
-        {COMMUNITY_THEMES.map((theme) => (
+        <DropdownMenuLabel className="text-xs text-muted-foreground">Available Themes</DropdownMenuLabel>
+        {AVAILABLE_THEMES.map((theme) => (
           <DropdownMenuItem
             key={theme.value}
             onClick={() => onThemeChange(theme.value)}

@@ -14,7 +14,7 @@ import PptxGenJS from "pptxgenjs";
 
 const initialMd = `---
 title: "Enter Title Here"
-theme: space
+theme: default
 marp: true
 paginate: true
 author: "Your Name"
@@ -25,13 +25,20 @@ author: "Your Name"
 Your subtitle here
 By Your Name
 
+<!-- Notes: This is a note for the presenter, it won't show on the slide -->
+
+---
+
+## This is a sample slide
+
+* Bullet 1
+* Bullet 2
+* Bullet 3
 `;
 
 // Theme definitions
 const THEME_DEFINITIONS = [
   { name: "Default", value: "default" },
-  { name: "Gaia", value: "gaia" },
-  { name: "Uncover", value: "uncover" },
   { name: "Space", value: "space" },
   { name: "Desert", value: "desert" },
 ];
@@ -402,53 +409,6 @@ const Index = () => {
           type: 'solid',
           color: '#f7e3da',
           transparency: 40
-        }
-      },
-      gaia: {
-        background: { type: 'solid', color: '#fff8e1' },
-        backgroundImage: null, // Gaia uses gradient background
-        titleBackgroundImage: null,
-        titleColor: '#455a64',
-        textColor: '#455a64',
-        accentColor: '#0288d1',
-        fontFamily: 'Lato',
-        titleFontFamily: 'Lato',
-        textFontFamily: 'Lato',
-        titleFontSize: 52,
-        textFontSize: 24,
-        titleStyle: { bold: true, italic: false },
-        textStyle: { bold: false, italic: false },
-        gradient: {
-          type: 'linear',
-          angle: 135,
-          stops: [
-            { position: 0, color: '#fff8e1' },
-            { position: 50, color: 'rgba(136, 136, 136, 0.02)' },
-            { position: 100, color: 'rgba(255, 255, 255, 0.05)' }
-          ]
-        }
-      },
-      uncover: {
-        background: { type: 'solid', color: '#fdfcff' },
-        backgroundImage: null, // Uncover uses solid background
-        titleBackgroundImage: null,
-        titleColor: '#202228',
-        textColor: '#202228',
-        accentColor: '#009dd5',
-        fontFamily: 'Red Hat Display',
-        titleFontFamily: 'Red Hat Display',
-        textFontFamily: 'Red Hat Display',
-        titleFontSize: 52,
-        textFontSize: 24,
-        titleStyle: { bold: false, italic: true },
-        textStyle: { bold: false, italic: false },
-        gradient: {
-          type: 'linear',
-          angle: 135,
-          stops: [
-            { position: 0, color: '#fdfcff' },
-            { position: 100, color: '#f8fafc' }
-          ]
         }
       },
       default: {

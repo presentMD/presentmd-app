@@ -1,29 +1,55 @@
-/* space.css - Marp custom theme with NASA space backgrounds */
+/*!
+ * Space Theme - NASA-inspired cosmic design
+ * @theme space
+ * @auto-scaling true
+ * @size 16:9 1280px 720px
+ * @size 4:3 960px 720px
+ */
 
 /* Import Google Fonts for a space feel */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Roboto:wght@300;400;500;700&display=swap');
 
 :root {
   /* Primary Colors */
   --space-blue: #110e3b;
   --nebula-accent: #ffacfc;
   --text-main: #ffffff;
+  --text-secondary: #a0a9d6;
+  --overlay-dark: rgba(17, 14, 59, 0.7);
 }
 
-/* Scope all theme rules under .presentmd-scope so they don't leak globally */
-.presentmd-scope :where(section) {
+/* Scope all theme rules under .presentmd-scope */
+.presentmd-scope section {
   font-family: 'Roboto', Arial, Helvetica, sans-serif;
   color: var(--text-main);
   background-image: url("/images/NASA-main_image_star-forming_region_carina_nircam_final-5mb.jpeg");
-  /* Photo Credit: NASA, ESA, CSA, and STScI https://www.dpreview.com/files/p/articles/4737758236/main_image_star-forming_region_carina_nircam_final-5mb.jpeg */
+  /* Photo Credit: NASA, ESA, CSA, and STScI */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   box-shadow: 0 0 64px 0 #000000bb inset;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  height: 100%;
+  width: 100%;
+  padding: clamp(40px, 8vw, 80px);
+  padding-top: clamp(40px, 8vw, 80px);
+  padding-left: clamp(40px, 8vw, 80px);
+  padding-right: clamp(40px, 8vw, 80px);
+  padding-bottom: clamp(40px, 8vw, 80px);
+  font-size: clamp(16px, 2.5vw, 29px);
+  line-height: 1.6;
+  position: relative;
+  box-sizing: border-box;
 }
 
-.presentmd-scope :where(section.title,
-.presentmd-scope :where(section[data-marpit-pagination="1"])) {
+/* Title slide styling */
+.presentmd-scope section.title-slide {
+  background-image: url('/images/NASA-cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA1L3BkMzYtMS1nc2ZjXzIwMTcxMjA4X2FyY2hpdmVfZTAwMjA3Ni5qcGc.png');
+  /* Photo Credit: NASA, ESA, CSA, and STScI */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -31,56 +57,301 @@
   font-family: 'Orbitron', 'Roboto', Arial, Helvetica, sans-serif;
   color: #fff;
   text-shadow: 0 4px 32px #000c;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
 }
 
-/* Target slides that are specifically marked as title or second-slide by the renderer */
-.presentmd-scope :where(section.title-slide) {
-  background-image: url('/images/NASA-cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA1L3BkMzYtMS1nc2ZjXzIwMTcxMjA4X2FyY2hpdmVfZTAwMjA3Ni5qcGc.png');
-  /* Photo Credit: NASA, ESA, CSA, and STScI */
+.presentmd-scope section.title-slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(17, 14, 59, 0.1);
+  z-index: 1;
 }
 
-.presentmd-scope :where(section.second-slide) {
+.presentmd-scope section.title-slide > * {
+  position: relative;
+  z-index: 2;
+  color: #ffffff;
+}
+
+/* Content slides styling */
+.presentmd-scope section:not(.title-slide) {
   background-image: url("/images/NASA-main_image_star-forming_region_carina_nircam_final-5mb.jpeg");
-  /* Photo Credit: NASA, ESA, CSA, and STScI */}
+  /* Photo Credit: NASA, ESA, CSA, and STScI */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  padding-top: clamp(40px, 8vw, 80px);
+  padding-left: clamp(40px, 8vw, 80px);
+  padding-right: clamp(40px, 8vw, 80px);
+  padding-bottom: clamp(40px, 8vw, 80px);
+}
 
-.presentmd-scope :where(h1, h2, h3, h4) {
+/* Headings for content slides */
+.presentmd-scope section:not(.title-slide) h1,
+.presentmd-scope section:not(.title-slide) h2,
+.presentmd-scope section:not(.title-slide) h3,
+.presentmd-scope section:not(.title-slide) h4,
+.presentmd-scope section:not(.title-slide) h5,
+.presentmd-scope section:not(.title-slide) h6 {
   font-family: 'Orbitron', 'Roboto', Arial, Helvetica, sans-serif;
   text-shadow: 0 2px 8px #000c;
+  color: var(--nebula-accent);
+  margin-bottom: clamp(20px, 4vw, 40px);
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  text-align: left;
 }
 
-/* Optional: Slight box overlay for better contrast on content slides */
-.presentmd-scope :where(section:not(:first-of-type))::before {
+.presentmd-scope section:not(.title-slide) h1 {
+  font-size: clamp(1.8em, 4vw, 2.2em);
+  font-weight: 700;
+  color: var(--nebula-accent);
+  margin-bottom: clamp(20px, 4vw, 40px);
+  line-height: 1.2;
+}
+
+.presentmd-scope section:not(.title-slide) h2 {
+  font-size: clamp(1.4em, 3.5vw, 1.8em);
+  font-weight: 600;
+  color: var(--nebula-accent);
+  line-height: 1.3;
+}
+
+.presentmd-scope section:not(.title-slide) h3 {
+  font-size: clamp(1.2em, 3vw, 1.4em);
+  font-weight: 600;
+  color: var(--nebula-accent);
+  line-height: 1.3;
+}
+
+.presentmd-scope section:not(.title-slide) h4 {
+  font-size: clamp(1.1em, 2.5vw, 1.2em);
+  font-weight: 500;
+  color: var(--nebula-accent);
+  line-height: 1.4;
+}
+
+.presentmd-scope section:not(.title-slide) h5 {
+  font-size: clamp(1em, 2.2vw, 1.1em);
+  font-weight: 500;
+  color: var(--nebula-accent);
+  line-height: 1.4;
+}
+
+.presentmd-scope section:not(.title-slide) h6 {
+  font-size: clamp(0.9em, 2vw, 1em);
+  font-weight: 500;
+  color: var(--nebula-accent);
+  line-height: 1.4;
+}
+
+/* Overlay for content slides */
+.presentmd-scope section:not(.title-slide)::before {
   content: '';
-  display: block;
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(135deg, #110e3be6 40%, #40105ed0 100%);
   pointer-events: none;
   z-index: 0;
 }
 
-.presentmd-scope :where(section) > * {
+.presentmd-scope section:not(.title-slide) > * {
   position: relative;
   z-index: 1;
 }
 
+/* Paragraphs for content slides */
+.presentmd-scope section:not(.title-slide) p {
+  color: var(--text-main);
+  font-weight: 400;
+  line-height: 1.6;
+  margin-bottom: clamp(12px, 2.5vw, 24px);
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  text-align: left;
+  text-shadow: 0 1px 4px #000c;
+}
+
+/* Lists for content slides */
+.presentmd-scope section:not(.title-slide) ul,
+.presentmd-scope section:not(.title-slide) ol {
+  color: var(--text-main);
+  margin-bottom: clamp(12px, 2.5vw, 24px);
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: clamp(20px, 4vw, 40px);
+  width: 100%;
+  text-align: left;
+}
+
+.presentmd-scope section:not(.title-slide) li {
+  color: var(--text-main);
+  margin-bottom: clamp(8px, 1.5vw, 16px);
+  line-height: 1.5;
+  text-shadow: 0 1px 4px #000c;
+}
+
 /* Code blocks and emphasis */
-.presentmd-scope :where(code, pre) {
-  background: rgba(30, 30, 60, .75);
+.presentmd-scope section code,
+.presentmd-scope section pre {
+  background: rgba(30, 30, 60, 0.75);
   border-radius: 8px;
   color: #fffbbf;
+  padding: 0.2em 0.4em;
+  font-family: 'Roboto Mono', monospace;
 }
 
-/* Slide footer, if used */
-.presentmd-scope :where(footer) {
-  font-size: 0.7em;
-  opacity: 0.8;
-  text-align: right;
-  margin-top: 40px;
+.presentmd-scope section pre {
+  padding: 1em;
+  margin: 1em 0;
+  overflow-x: auto;
 }
 
-/* Pagination style */
-.presentmd-scope :where(.marpit-pagination) {
-  color: #fff7;
-  font-family: 'Orbitron', 'Roboto', Arial, Helvetica, sans-serif;
+/* Links */
+.presentmd-scope section a {
+  color: var(--nebula-accent);
+  text-decoration: underline;
+  text-shadow: 0 1px 4px #000c;
+}
+
+.presentmd-scope section a:hover {
+  color: #ffacfc;
+  text-shadow: 0 2px 8px #000c;
+}
+
+/* Responsive design for different viewing modes */
+/* Thumbnail mode - smaller text and padding */
+.presentmd-scope section:not(.title-slide)[data-thumbnail] {
+  font-size: clamp(8px, 1.5vw, 12px);
+  padding: clamp(8px, 2vw, 16px);
+  padding-top: clamp(12px, 3vw, 24px);
+  padding-left: clamp(12px, 3vw, 24px);
+  padding-right: clamp(12px, 3vw, 24px);
+  padding-bottom: clamp(12px, 3vw, 24px);
+}
+
+.presentmd-scope section:not(.title-slide)[data-thumbnail] h1 {
+  font-size: clamp(1.2em, 2.5vw, 1.5em);
+  margin-bottom: clamp(8px, 2vw, 16px);
+}
+
+.presentmd-scope section:not(.title-slide)[data-thumbnail] h2 {
+  font-size: clamp(1em, 2vw, 1.2em);
+  margin-bottom: clamp(6px, 1.5vw, 12px);
+}
+
+.presentmd-scope section:not(.title-slide)[data-thumbnail] h3 {
+  font-size: clamp(0.9em, 1.8vw, 1.1em);
+  margin-bottom: clamp(6px, 1.5vw, 12px);
+}
+
+/* Preview mode - medium sizing */
+.presentmd-scope section:not(.title-slide)[data-preview] {
+  font-size: clamp(14px, 2vw, 24px);
+  padding: clamp(24px, 4vw, 48px);
+  padding-top: clamp(32px, 6vw, 64px);
+  padding-left: clamp(32px, 6vw, 64px);
+  padding-right: clamp(32px, 6vw, 64px);
+  padding-bottom: clamp(32px, 6vw, 64px);
+}
+
+/* Presentation mode - full sizing */
+.presentmd-scope section:not(.title-slide)[data-presentation] {
+  font-size: clamp(18px, 2.5vw, 32px);
+  padding: clamp(32px, 6vw, 80px);
+  padding-top: clamp(40px, 8vw, 80px);
+  padding-left: clamp(40px, 8vw, 80px);
+  padding-right: clamp(40px, 8vw, 80px);
+  padding-bottom: clamp(40px, 8vw, 80px);
+}
+
+/* Ensure title slide works in all modes */
+.presentmd-scope section.title-slide[data-thumbnail] {
+  min-height: auto;
+  padding: clamp(8px, 2vw, 16px);
+  font-size: clamp(8px, 1.5vw, 12px);
+}
+
+.presentmd-scope section.title-slide[data-preview] {
+  min-height: auto;
+  padding: clamp(24px, 4vw, 48px);
+  font-size: clamp(14px, 2vw, 24px);
+}
+
+.presentmd-scope section.title-slide[data-presentation] {
+  min-height: 100vh;
+  padding: clamp(24px, 4vw, 60px);
+  font-size: clamp(18px, 2.5vw, 32px);
+}
+
+/* Additional responsive improvements */
+@media (max-width: 768px) {
+  .presentmd-scope section:not(.title-slide) {
+    font-size: clamp(14px, 3vw, 20px);
+    padding: clamp(20px, 5vw, 40px);
+    padding-top: clamp(24px, 6vw, 48px);
+    padding-left: clamp(24px, 6vw, 48px);
+    padding-right: clamp(24px, 6vw, 48px);
+    padding-bottom: clamp(24px, 6vw, 48px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) h1 {
+    font-size: clamp(1.5em, 5vw, 2em);
+    margin-bottom: clamp(16px, 3vw, 32px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) h2 {
+    font-size: clamp(1.2em, 4vw, 1.5em);
+    margin-bottom: clamp(12px, 2.5vw, 24px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) ul,
+  .presentmd-scope section:not(.title-slide) ol {
+    padding-left: clamp(16px, 3vw, 32px);
+  }
+}
+
+@media (max-width: 480px) {
+  .presentmd-scope section:not(.title-slide) {
+    font-size: clamp(12px, 4vw, 16px);
+    padding: clamp(16px, 6vw, 32px);
+    padding-top: clamp(20px, 7vw, 40px);
+    padding-left: clamp(20px, 7vw, 40px);
+    padding-right: clamp(20px, 7vw, 40px);
+    padding-bottom: clamp(20px, 7vw, 40px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) h1 {
+    font-size: clamp(1.3em, 6vw, 1.8em);
+    margin-bottom: clamp(12px, 4vw, 24px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) h2 {
+    font-size: clamp(1.1em, 5vw, 1.3em);
+    margin-bottom: clamp(10px, 3vw, 20px);
+  }
+  
+  .presentmd-scope section:not(.title-slide) ul,
+  .presentmd-scope section:not(.title-slide) ol {
+    padding-left: clamp(12px, 4vw, 24px);
+  }
 }

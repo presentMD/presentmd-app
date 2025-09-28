@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 const MARP_EXAMPLES = {
   basic: `---
 title: "My Presentation"
-theme: gaia
+theme: default
 marp: true
 paginate: true
 author: "Your Name"
@@ -54,7 +54,7 @@ Text over background image`,
 
   advanced: `---
 marp: true
-theme: gaia
+theme: default
 class: lead
 paginate: true
 backgroundColor: #fff
@@ -456,7 +456,7 @@ export default function HelpDialog() {
                 <div>
                   <h4 className="font-semibold mb-2">Theme Usage:</h4>
                   <ul className="text-sm space-y-1 text-muted-foreground">
-                    <li><strong>Built-in themes:</strong> <code>theme: gaia</code>, <code>theme: uncover</code>, <code>theme: default</code></li>
+                    <li><strong>Built-in themes:</strong> <code>theme: default</code>, <code>theme: space</code>, <code>theme: desert</code></li>
                     <li><strong>Custom theme URL:</strong> <code>theme: 'https://example.com/theme.css'</code></li>
                     <li><strong>Slide classes:</strong> <code>&lt;!-- _class: lead invert --&gt;</code></li>
                     <li><strong>Background colors:</strong> <code>&lt;!-- _backgroundColor: #ff0000 --&gt;</code></li>
@@ -466,9 +466,9 @@ export default function HelpDialog() {
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-2">Community Themes:</h4>
+                  <h4 className="font-semibold mb-2">Custom Themes:</h4>
                   <ul className="text-sm space-y-1 text-muted-foreground">
-                    <li><strong>Dracula:</strong> Dark theme with purple accents</li>
+                    <li>Use custom CSS URLs for external themes</li>
                     <li>Find more themes on GitHub and use their CDN URLs</li>
                   </ul>
                 </div>
