@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import SlideRenderer from "@/components/slides/SlideRenderer";
-import { parseSlides, extractSlideTitles, extractTheme, extractSpeakerNotes, cleanSlideContent, determineSlideClass } from "@/components/slides/utils";
+import { parseSlides, extractSlideTitles, extractSpeakerNotes, cleanSlideContent, determineSlideClass } from "@/components/slides/utils";
 
 
 interface PreviewProps {
@@ -10,13 +10,13 @@ interface PreviewProps {
   current: number;
   onChangeSlide: (index: number) => void;
   customCss?: string;
+  theme: string;
 }
 
-export default function Preview({ markdown, current, onChangeSlide, customCss }: PreviewProps) {
+export default function Preview({ markdown, current, onChangeSlide, customCss, theme }: PreviewProps) {
   // Parse markdown into slides
   const slides = useMemo(() => parseSlides(markdown), [markdown]);
   const titles = useMemo(() => extractSlideTitles(slides), [slides]);
-  const theme = useMemo(() => extractTheme(markdown), [markdown]);
 
   // Thumbnail pagination
   const THUMB_PER_PAGE = 4;

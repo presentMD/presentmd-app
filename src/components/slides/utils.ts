@@ -2,36 +2,56 @@
 function isMetadataOnlySlide(slide: string): boolean {
   if (!slide.trim()) return true;
   
-  // Remove all metadata lines
-  const withoutMetadata = slide.replace(/^(theme|title|class|paginate|marp|size|author|date|backgroundColor|backgroundImage|color|footer|header|style|transition|math|headingDivider|inlineSVG|html):\s*.*$/gm, '');
+  // Remove all metadata lines (expanded list)
+  const withoutMetadata = slide.replace(/^(theme|title|class|paginate|marp|size|author|date|backgroundColor|backgroundImage|color|footer|header|style|transition|math|headingDivider|inlineSVG|html|layout|background|class|_class|_paginate|_size|_theme|_style|_transition|_math|_headingDivider|_inlineSVG|_html|_backgroundColor|_backgroundImage|_color|_footer|_header):\s*.*$/gm, '');
   
   // Remove YAML frontmatter blocks
   const withoutYaml = withoutMetadata.replace(/^---\s*[\s\S]*?---\s*/m, '');
   
+  // Remove HTML comments that might contain metadata
+  const withoutComments = withoutYaml.replace(/<!--\s*[^>]*?-->/gs, '');
+  
   // Check if anything meaningful remains
-  return withoutYaml.trim().length === 0;
+  return withoutComments.trim().length === 0;
 }
 
-// Parse markdown content into individual slides
+// Parse markdown content into individual slides, ignoring all metadata
 export function parseSlides(markdown: string): string[] {
   if (!markdown.trim()) return [''];
   
-  // Split on slide separators (---)
-  const slides = markdown.split(/^---\s*$/m).map(slide => slide.trim());
-
-  // Skip first slide if it contains only metadata
-  if (slides.length > 0 && isMetadataOnlySlide(slides[0])) {
-    slides.shift();
+  // First, check if there's actual YAML frontmatter (must have key: value pairs)
+  // Only remove if it looks like real YAML frontmatter, not just slide separators
+  let cleanedMarkdown = markdown;
+  const yamlMatch = markdown.match(/^---\s*\n([\s\S]*?)\n---\s*/m);
+  if (yamlMatch && yamlMatch[1].trim()) {
+    // Check if the content between --- markers looks like YAML (has key: value pairs)
+    const yamlContent = yamlMatch[1].trim();
+    const hasYamlKeys = /^(theme|title|class|paginate|marp|size|author|date|backgroundColor|backgroundImage|color|footer|header|style|transition|math|headingDivider|inlineSVG|html|layout|background):\s*.*$/m.test(yamlContent);
+    
+    if (hasYamlKeys) {
+      // Only remove if it's actual YAML frontmatter
+      cleanedMarkdown = markdown.replace(/^---\s*[\s\S]*?---\s*/m, '');
+    }
   }
+  
+  // If markdown starts with --- but it's not YAML frontmatter, treat it as a slide separator
+  if (cleanedMarkdown.startsWith('---') && (!yamlMatch || !yamlMatch[1].trim().match(/^(theme|title|class|paginate|marp|size|author|date|backgroundColor|backgroundImage|color|footer|header|style|transition|math|headingDivider|inlineSVG|html|layout|background):\s*.*$/m))) {
+    cleanedMarkdown = cleanedMarkdown.replace(/^---\s*/, '');
+  }
+  
+  // Split on slide separators (---)
+  const slides = cleanedMarkdown.split(/^---\s*$/m).map(slide => slide.trim());
 
-  // Second slide may also have only meta data so repeat: 
-  // Skip first slide if it contains only metadata
-  if (slides.length > 0 && isMetadataOnlySlide(slides[0])) {
-    slides.shift();
+  // Remove any slides that contain only metadata
+  const contentSlides = slides.filter(slide => !isMetadataOnlySlide(slide));
+
+  // If no content slides remain, return a default empty slide
+  if (contentSlides.length === 0) {
+    return [''];
   }
 
   // Clean up each slide content and remove empties
-  return slides.map(slide => slide.trim()).filter(slide => slide.length > 0);
+  return contentSlides.map(slide => slide.trim()).filter(slide => slide.length > 0);
 }
 
 // Extract slide titles from markdown content

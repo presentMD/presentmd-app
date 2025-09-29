@@ -13,7 +13,7 @@ export interface MarkdownEditorProps {
   className?: string;
 }
 
-// Simple Marp-aware linting
+// Simple presentation-aware linting (no YAML frontmatter required)
 function marpLinter(): (view: unknown) => Diagnostic[] {
   return (view) => {
     // view comes from CodeMirror; use type-safe access via index signature
@@ -22,73 +22,43 @@ function marpLinter(): (view: unknown) => Diagnostic[] {
     const text: string = v.state.doc.toString();
     const diags: Diagnostic[] = [];
 
-    // Detect YAML front matter (if present) and run metadata-specific checks
-    const fmMatch = text.match(/^---\n[\s\S]*?\n---\n?/m);
-    let metaLength = 0;
-    if (!fmMatch) {
-      // No front matter — still warn the user and require a title in metadata
-      diags.push({
-        from: 0,
-        to: Math.min(3, text.length),
-        message: "Missing YAML front matter. Add `---` with `marp: true` and a `title: \"Your Title\"`.",
-        severity: "warning",
-      });
-    } else {
-      const fm = fmMatch[0];
-      metaLength = fm.length;
-
-      // Check for marp: true in front matter
-      if (!/\bmarp:\s*true\b/m.test(fm)) {
-        diags.push({
-          from: 0,
-          to: metaLength,
-          message: "Front matter should include `marp: true`.",
-          severity: "warning",
-        });
-      }
-
-      // Metadata-specific validation: title is mandatory and must be non-empty
-      if (!/\btitle:\s*.+/m.test(fm)) {
-        diags.push({
-          from: 0,
-          to: metaLength,
-          message: "Front matter must include a non-empty `title: \"Your Title\"` entry.",
-          severity: "warning",
-        });
-      }
-    }
+    // No YAML frontmatter warnings - metadata is ignored
+    // Just check for basic presentation structure
 
     // Slide separators (ignore ones inside code fences)
     const lines = text.split(/\n/);
     let inFence = false;
     let sepCount = 0;
-    let offset = 0;
     lines.forEach((line, i) => {
       if (/^```/.test(line)) inFence = !inFence;
       if (!inFence && /^---\s*$/.test(line)) sepCount++;
-      offset += line.length + 1;
     });
-    if (sepCount === 0) {
-      diags.push({
-        from: 0,
-        to: Math.min(text.length, 3),
-        message: "Add `---` between slides to separate them.",
-        severity: "info",
-      });
+    
+    // Only suggest slide separators if there's content but no separators
+    if (sepCount === 0 && text.trim().length > 0) {
+      // Check if there are multiple headings (potential slides without separators)
+      const headingCount = (text.match(/^#{1,6}\s+/gm) || []).length;
+      if (headingCount > 1) {
+        diags.push({
+          from: 0,
+          to: Math.min(text.length, 3),
+          message: "Consider adding `---` between slides to separate them.",
+          severity: "info",
+        });
+      }
     }
 
-    // Basic per-slide heading check — run on the content after front matter
-    const textAfterMeta = metaLength > 0 ? text.slice(metaLength) : text;
-    const slides = splitSlides(textAfterMeta);
-    let running = metaLength; // offset diagnostics so they point into original text
+    // Basic per-slide heading check
+    const slides = splitSlides(text);
+    let running = 0;
     slides.forEach((s, idx) => {
       const hasHeading = /^\s*#{1,6}\s+/m.test(s);
-      if (!hasHeading) {
+      if (!hasHeading && s.trim().length > 0) {
         diags.push({
           from: running,
           to: running + Math.min(s.length, 20),
-          message: `Slide ${idx + 1} has no heading. Add a title (e.g., \n# My Title).`,
-          severity: "warning",
+          message: `Slide ${idx + 1} has no heading. Consider adding a title (e.g., # My Title).`,
+          severity: "info",
         });
       }
       running += s.length + 4; // approx for separators
@@ -121,16 +91,14 @@ function marpCompletions(ctx: CompletionContext) {
   const atLineStart = ctx.state.doc.lineAt(ctx.pos).from === ctx.pos;
 
   const snippets: Completion[] = [
-    {
-      label: "Marp front matter",
-      type: "keyword",
-      apply: "---\nmarp: true\ntheme: default\npaginate: true\n---\n",
-      info: "Insert Marp front matter",
-    },
     { label: "---", type: "keyword", apply: "---\n", info: "Slide separator" },
-    { label: "class: lead", type: "property", apply: "class: lead\n", info: "Large lead slide" },
-    { label: "backgroundImage:", type: "property", apply: 'backgroundImage: url("")\n', info: "Slide background image" },
-    { label: "style: |", type: "property", apply: "style: |\n  section {\n    /* custom CSS */\n  }\n", info: "Inline style block" },
+    { label: "# Title", type: "keyword", apply: "# Title\n\n", info: "Main heading" },
+    { label: "## Subtitle", type: "keyword", apply: "## Subtitle\n\n", info: "Subheading" },
+    { label: "### Section", type: "keyword", apply: "### Section\n\n", info: "Section heading" },
+    { label: "<!-- _class: lead -->", type: "property", apply: "<!-- _class: lead -->\n", info: "Lead slide class" },
+    { label: "<!-- _backgroundColor: -->", type: "property", apply: "<!-- _backgroundColor: #color -->\n", info: "Background color directive" },
+    { label: "![bg]", type: "property", apply: "![bg](image.jpg)\n", info: "Background image" },
+    { label: "![bg left]", type: "property", apply: "![bg left](image.jpg)\n", info: "Left background image" },
   ];
 
   if (atLineStart) return { from: ctx.pos, options: snippets };

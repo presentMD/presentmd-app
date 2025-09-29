@@ -14,15 +14,7 @@ import { HelpCircle, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const MARP_EXAMPLES = {
-  basic: `---
-title: "My Presentation"
-theme: default
-marp: true
-paginate: true
-author: "Your Name"
----
-
-# Welcome to My Presentation
+  basic: `# Welcome to My Presentation
 
 A subtitle for the title slide
 
@@ -52,16 +44,7 @@ function hello() {
 
 Text over background image`,
 
-  advanced: `---
-marp: true
-theme: default
-class: lead
-paginate: true
-backgroundColor: #fff
-backgroundImage: url('https://example.com/bg.jpg')
----
-
-<!-- _class: lead -->
+  advanced: `<!-- _class: lead -->
 # Advanced Slide Features
 
 ---
@@ -121,12 +104,7 @@ graph TD
     B -->|No| D[Action 2]
 \`\`\``,
 
-  directives: `---
-marp: true
-theme: default
----
-
-<!-- Slide-specific directives start with underscore -->
+  directives: `<!-- Slide-specific directives start with underscore -->
 
 <!-- _class: lead -->
 # Lead Style Slide
@@ -371,9 +349,9 @@ export default function HelpDialog() {
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle>Marp Markdown Guide</DialogTitle>
+          <DialogTitle>Presentation Markdown Guide</DialogTitle>
           <DialogDescription>
-            Complete guide to Marp markdown syntax and theme customization
+            Complete guide to markdown syntax and theme customization for presentations
           </DialogDescription>
         </DialogHeader>
         
@@ -389,7 +367,7 @@ export default function HelpDialog() {
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Basic Presentation</h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Every Marp presentation starts with YAML frontmatter and uses <code>---</code> to separate slides.
+                    Start with your content directly. Use <code>---</code> to separate slides. Themes are controlled via the theme selector in the editor.
                   </p>
                   <CodeBlock code={MARP_EXAMPLES.basic} label="Basic Example" />
                 </div>
@@ -413,13 +391,13 @@ export default function HelpDialog() {
                 <div>
                   <h4 className="font-semibold mb-2">Key Features:</h4>
                   <ul className="text-sm space-y-1 text-muted-foreground">
-                    <li><strong>Frontmatter:</strong> YAML configuration at the top</li>
                     <li><strong>Slide separator:</strong> <code>---</code> creates new slides</li>
                     <li><strong>Directives:</strong> <code>&lt;!-- _property: value --&gt;</code> for slide-specific settings</li>
                     <li><strong>Background images:</strong> <code>![bg](image.jpg)</code></li>
                     <li><strong>Split layouts:</strong> <code>![bg left](image.jpg)</code></li>
                     <li><strong>Math:</strong> <code>$inline$</code> or <code>$$block$$</code></li>
                     <li><strong>Classes:</strong> <code>&lt;!-- _class: lead --&gt;</code></li>
+                    <li><strong>Themes:</strong> Use the theme selector in the editor panel</li>
                   </ul>
                 </div>
               </div>
@@ -456,8 +434,8 @@ export default function HelpDialog() {
                 <div>
                   <h4 className="font-semibold mb-2">Theme Usage:</h4>
                   <ul className="text-sm space-y-1 text-muted-foreground">
-                    <li><strong>Built-in themes:</strong> <code>theme: default</code>, <code>theme: space</code>, <code>theme: desert</code></li>
-                    <li><strong>Custom theme URL:</strong> <code>theme: 'https://example.com/theme.css'</code></li>
+                    <li><strong>Built-in themes:</strong> Default, Space, Desert (select from theme dropdown)</li>
+                    <li><strong>Custom theme URL:</strong> Enter CSS URL in the custom theme option</li>
                     <li><strong>Slide classes:</strong> <code>&lt;!-- _class: lead invert --&gt;</code></li>
                     <li><strong>Background colors:</strong> <code>&lt;!-- _backgroundColor: #ff0000 --&gt;</code></li>
                     <li><strong>Text colors:</strong> <code>&lt;!-- _color: white --&gt;</code></li>

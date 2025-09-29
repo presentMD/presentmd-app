@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SlideRenderer from "@/components/slides/SlideRenderer";
-import { parseSlides, extractTheme, cleanSlideContent } from "@/components/slides/utils";
+import { parseSlides, cleanSlideContent } from "@/components/slides/utils";
 
 
 const decode = (s: string | null) => {
@@ -18,11 +18,11 @@ export default function Present() {
   const [params] = useSearchParams();
   const md = decode(params.get("md"));
   const customCss = decode(params.get("css"));
+  const theme = decode(params.get("theme")) || "default";
   const startIndex = Number(params.get("i") ?? 0) || 0;
 
   // Parse markdown into slides
   const slides = useMemo(() => parseSlides(md), [md]);
-  const theme = useMemo(() => extractTheme(md), [md]);
 
   const [index, setIndex] = useState(Math.min(startIndex, Math.max(0, slides.length - 1)));
 

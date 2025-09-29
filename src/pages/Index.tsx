@@ -12,13 +12,7 @@ import ThemeModeSwitcher from "@/components/ThemeModeSwitcher";
 import HelpDialog from "@/components/HelpDialog";
 import PptxGenJS from "pptxgenjs";
 
-const initialMd = `---
-title: "Enter Title Here"
-theme: default
-marp: true
-paginate: true
-author: "Your Name"
----
+const initialMd = `
 
 # Enter Title Here
 
@@ -52,6 +46,7 @@ const Index = () => {
   const [baseThemeName, setBaseThemeName] = useState<string | undefined>();
   const [isPresentationMode, setIsPresentationMode] = useState(false);
   const [presentationSlideIndex, setPresentationSlideIndex] = useState(0);
+  const [selectedTheme, setSelectedTheme] = useState<string>('default');
   
   const { toast } = useToast();
 
@@ -80,15 +75,12 @@ const Index = () => {
     }
   }, [md]);
 
-  // Extract current theme from markdown frontmatter
-  const currentTheme = useMemo(() => {
-    const themeMatch = md.match(/^theme:\s*(.+)$/m);
-    return themeMatch ? themeMatch[1].replace(/['"]/g, '') : 'default';
-  }, [md]);
+  // Use selected theme from UI instead of parsing from markdown
+  const currentTheme = selectedTheme;
 
   // Parse slides for presentation mode
   const slides = useMemo(() => parseSlides(md), [md]);
-  const presentationTheme = useMemo(() => extractTheme(md), [md]);
+  const presentationTheme = selectedTheme;
 
   // Validate URL for security
   const isValidUrl = (url: string): boolean => {
@@ -171,24 +163,13 @@ const Index = () => {
     loadInitialCss();
   }, [currentTheme, customCss]);
 
-  // Handle theme change by updating frontmatter and loading CSS
+  // Handle theme change by updating state and loading CSS
   const handleThemeChange = async (theme: string) => {
-    // Track theme change
-    
-    const frontMatterRegex = /^---\n([\s\S]*?)\n---/;
-    const match = md.match(frontMatterRegex);
+    // Update selected theme state
+    setSelectedTheme(theme);
     
     if (theme === 'custom') {
-      // When marking as custom, update frontmatter but don't load new CSS
-      if (match) {
-        const frontMatter = match[1];
-        const updatedFrontMatter = frontMatter.replace(
-          /^theme:\s*.*$/m,
-          'theme: custom'
-        );
-        const newMd = md.replace(frontMatterRegex, `---\n${updatedFrontMatter}\n---`);
-        setMd(newMd);
-      }
+      // When marking as custom, don't load new CSS
       setIsCustomTheme(true);
     } else {
       // Load new theme CSS
@@ -196,17 +177,6 @@ const Index = () => {
       setCustomCss(css);
       setIsCustomTheme(false);
       setBaseThemeName(undefined);
-      
-      if (match) {
-        const frontMatter = match[1];
-        const themeValue = theme.startsWith('http') ? `'${theme}'` : theme;
-        const updatedFrontMatter = frontMatter.replace(
-          /^theme:\s*.*$/m,
-          `theme: ${themeValue}`
-        );
-        const newMd = md.replace(frontMatterRegex, `---\n${updatedFrontMatter}\n---`);
-        setMd(newMd);
-      }
     }
   };
 
@@ -790,7 +760,7 @@ const Index = () => {
                 <span className="text-sm text-muted-foreground">Preview</span>
               </div>
               <div className="h-[calc(100%-3rem)] overflow-hidden">
-                <Preview markdown={md} current={current} onChangeSlide={setCurrent} customCss={customCss} />
+                <Preview markdown={md} current={current} onChangeSlide={setCurrent} customCss={customCss} theme={currentTheme} />
               </div>
             </div>
           </div>
