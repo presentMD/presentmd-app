@@ -3,6 +3,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { cn } from '@/lib/utils';
+import { extractFooterContent, extractHeaderContent, cleanSlideContent } from './utils';
 
 // Theme configs. Add more themes as desired!
 const themeConfigs = {
@@ -111,6 +112,13 @@ export default function SlideRenderer({ content, className = '', theme = default
   const isPresentation = className?.includes('presentation-mode');
   const isPreview = !isThumbnail && !isPresentation;
   
+  // Extract footer and header content from the original content (before cleaning)
+  const footerContent = extractFooterContent(content);
+  const headerContent = extractHeaderContent(content);
+  
+  // Clean the content for rendering
+  const cleanedContent = cleanSlideContent(content);
+  
   const rootClass = cn(
     themeConfigs[t].root, 
     className?.includes('presentation-mode') ? "p-16 flex flex-col justify-center h-full w-full" : "p-8 flex flex-col justify-center h-full w-full",
@@ -125,11 +133,26 @@ export default function SlideRenderer({ content, className = '', theme = default
       data-thumbnail={isThumbnail ? 'true' : undefined}
       data-preview={isPreview ? 'true' : undefined}
       data-presentation={isPresentation ? 'true' : undefined}
+      data-footer={footerContent ? 'true' : undefined}
+      data-header={headerContent ? 'true' : undefined}
     >
       {shouldLoadSpaceTheme && (
         <style>
           {`@import url('/themes/space.css');`}
         </style>
+      )}
+      {headerContent && (
+        <header style={{ 
+          position: 'absolute', 
+          top: '21px', 
+          left: '30px', 
+          color: 'rgba(102, 102, 102, 0.75)', 
+          fontSize: '18px', 
+          margin: 0,
+          zIndex: 10
+        }}>
+          {headerContent}
+        </header>
       )}
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
@@ -148,8 +171,21 @@ export default function SlideRenderer({ content, className = '', theme = default
           blockquote: ({ children }) => <SlideBlockquote theme={t}>{children}</SlideBlockquote>,
         }}
       >
-        {content}
+        {cleanedContent}
       </ReactMarkdown>
+      {footerContent && (
+        <footer style={{ 
+          position: 'absolute', 
+          bottom: '21px', 
+          left: '30px', 
+          color: 'rgba(102, 102, 102, 0.75)', 
+          fontSize: '18px', 
+          margin: 0,
+          zIndex: 10
+        }}>
+          {footerContent}
+        </footer>
+      )}
     </section>
   );
 }

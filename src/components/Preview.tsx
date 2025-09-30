@@ -60,7 +60,7 @@ export default function Preview({ markdown, current, onChangeSlide, customCss, t
           {/* Scope theme styles to this container using the presentmd-scope class */}
           <div className="w-full h-full presentmd-scope">
             <SlideRenderer
-              content={cleanSlideContent(slides[current] || '')}
+              content={slides[current] || ''}
               theme={theme}
               className={`w-full h-full ${determineSlideClass(slides[current] || '')}`}
             />
@@ -141,7 +141,7 @@ export default function Preview({ markdown, current, onChangeSlide, customCss, t
                         style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: `${100 / scale}%`, height: `${100 / scale}%`, overflow: 'hidden' }}
                       >
                         <div className="presentmd-scope w-full h-full text-xs">
-                          <SlideRenderer content={cleanSlideContent(slideContent || '')} theme={theme} className={`w-full h-full ${determineSlideClass(slideContent || '')}`} />
+                          <SlideRenderer content={slideContent || ''} theme={theme} className={`w-full h-full ${determineSlideClass(slideContent || '')}`} />
                         </div>
                       </div>
                     </div>

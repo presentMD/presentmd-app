@@ -47,7 +47,7 @@ export default function Present() {
     return () => window.removeEventListener("keydown", onKey);
   }, [slides.length]);
 
-  const shown = slides[index] ? cleanSlideContent(slides[index]) : "";
+  const shown = slides[index] || "";
 
   const goToPrevious = () => setIndex((i) => Math.max(i - 1, 0));
   const goToNext = () => setIndex((i) => Math.min(i + 1, slides.length - 1));

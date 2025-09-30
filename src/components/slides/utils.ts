@@ -50,8 +50,51 @@ export function parseSlides(markdown: string): string[] {
     return [''];
   }
 
+  // Process slides to add persistent header/footer content
+  let persistentHeader: string | null = null;
+  let persistentFooter: string | null = null;
+  
+  const processedSlides = contentSlides.map(slide => {
+    // Check for header directive in this slide
+    const headerMatch = slide.match(/<!--\s*header:\s*["']?([^"']*)["']?\s*-->/i);
+    if (headerMatch) {
+      const headerContent = headerMatch[1].trim();
+      if (headerContent === '') {
+        // Empty header directive clears the persistent header
+        persistentHeader = null;
+      } else {
+        // Set new persistent header
+        persistentHeader = headerContent;
+      }
+    }
+    
+    // Check for footer directive in this slide
+    const footerMatch = slide.match(/<!--\s*footer:\s*["']?([^"']*)["']?\s*-->/i);
+    if (footerMatch) {
+      const footerContent = footerMatch[1].trim();
+      if (footerContent === '') {
+        // Empty footer directive clears the persistent footer
+        persistentFooter = null;
+      } else {
+        // Set new persistent footer
+        persistentFooter = footerContent;
+      }
+    }
+    
+    // Add persistent header/footer to slide content if they exist
+    let enhancedSlide = slide;
+    if (persistentHeader && !slide.includes('<!-- header:')) {
+      enhancedSlide = `<!-- header: "${persistentHeader}" -->\n${enhancedSlide}`;
+    }
+    if (persistentFooter && !slide.includes('<!-- footer:')) {
+      enhancedSlide = `${enhancedSlide}\n<!-- footer: "${persistentFooter}" -->`;
+    }
+    
+    return enhancedSlide;
+  });
+
   // Clean up each slide content and remove empties
-  return contentSlides.map(slide => slide.trim()).filter(slide => slide.length > 0);
+  return processedSlides.map(slide => slide.trim()).filter(slide => slide.length > 0);
 }
 
 // Extract slide titles from markdown content
@@ -87,6 +130,18 @@ export function extractSpeakerNotes(slideContent: string): string {
   return notesMatch ? (notesMatch[1] || notesMatch[2] || '').trim() : '';
 }
 
+// Extract footer content from slide
+export function extractFooterContent(slideContent: string): string | null {
+  const footerMatch = slideContent.match(/<!--\s*footer:\s*["']?([^"']*)["']?\s*-->/i);
+  return footerMatch ? footerMatch[1].trim() : null;
+}
+
+// Extract header content from slide
+export function extractHeaderContent(slideContent: string): string | null {
+  const headerMatch = slideContent.match(/<!--\s*header:\s*["']?([^"']*)["']?\s*-->/i);
+  return headerMatch ? headerMatch[1].trim() : null;
+}
+
 // Clean slide content by removing frontmatter and speaker notes
 export function cleanSlideContent(slideContent: string): string {
   let cleaned = slideContent;
@@ -99,7 +154,7 @@ export function cleanSlideContent(slideContent: string): string {
     return `<div class="${className}"></div>`;
   });
 
-  // Remove other HTML comments
+  // Remove other HTML comments (including footer and header comments)
   cleaned = cleaned.replace(/<!--(?!\s*_class:).*?-->/gs, '');
   
   // Remove "Notes:" sections
