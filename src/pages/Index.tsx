@@ -23,30 +23,13 @@ By Your Name
 
 ---
 
-<!-- header: "Chapter 1" -->
+<!-- Footer: "2025 | presentMD.com" -->
 ## This is a sample slide
 
 * Bullet 1
 * Bullet 2
 * Bullet 3
 
----
-
-## Another slide
-
-This slide should also have the "Chapter 1" header
-
-* More content
-* More bullets
-
----
-
-## Third slide
-
-This slide should also have the persistent header
-
-* Final content
-* Final bullets
 `;
 
 // Theme definitions

@@ -142,6 +142,19 @@ export function extractHeaderContent(slideContent: string): string | null {
   return headerMatch ? headerMatch[1].trim() : null;
 }
 
+// Extract background image information from slide content
+export function extractBackgroundImage(slideContent: string): { url: string; position: string } | null {
+  // Look for ![bg left](url) or ![bg right](url) or ![bg](url) patterns
+  const bgMatch = slideContent.match(/!\[bg(?:\s+(left|right|fit|cover|contain))?\]\(([^)]+)\)/i);
+  if (bgMatch) {
+    return {
+      url: bgMatch[2].trim(),
+      position: bgMatch[1]?.trim() || 'cover'
+    };
+  }
+  return null;
+}
+
 // Clean slide content by removing frontmatter and speaker notes
 export function cleanSlideContent(slideContent: string): string {
   let cleaned = slideContent;
@@ -156,6 +169,9 @@ export function cleanSlideContent(slideContent: string): string {
 
   // Remove other HTML comments (including footer and header comments)
   cleaned = cleaned.replace(/<!--(?!\s*_class:).*?-->/gs, '');
+  
+  // Remove background image syntax (used for styling, not content)
+  cleaned = cleaned.replace(/!\[bg(?:\s+(left|right|fit|cover|contain))?\]\([^)]+\)/gi, '');
   
   // Remove "Notes:" sections
   cleaned = cleaned.replace(/Notes:\s*.*?(?=\n\n|\n---|$)/gs, '');

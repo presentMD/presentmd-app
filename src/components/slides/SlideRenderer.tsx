@@ -3,7 +3,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { cn } from '@/lib/utils';
-import { extractFooterContent, extractHeaderContent, cleanSlideContent } from './utils';
+import { extractFooterContent, extractHeaderContent, cleanSlideContent, extractBackgroundImage } from './utils';
 
 // Theme configs. Add more themes as desired!
 const themeConfigs = {
@@ -115,6 +115,7 @@ export default function SlideRenderer({ content, className = '', theme = default
   // Extract footer and header content from the original content (before cleaning)
   const footerContent = extractFooterContent(content);
   const headerContent = extractHeaderContent(content);
+  const backgroundImage = extractBackgroundImage(content);
   
   // Clean the content for rendering
   const cleanedContent = cleanSlideContent(content);
@@ -123,18 +124,46 @@ export default function SlideRenderer({ content, className = '', theme = default
     themeConfigs[t].root, 
     className?.includes('presentation-mode') ? "p-16 flex flex-col justify-center h-full w-full" : "p-8 flex flex-col justify-center h-full w-full",
     shouldLoadSpaceTheme && "space-theme-section",
+    backgroundImage && "bg-image-slide",
     className
   );
+
+  // Generate background image styles
+  const backgroundImageStyle = backgroundImage ? {
+    ...(backgroundImage.position === 'left' && {
+      display: 'flex',
+      flexDirection: 'row' as const,
+      alignItems: 'stretch',
+      position: 'relative' as const
+    }),
+    ...(backgroundImage.position === 'right' && {
+      display: 'flex',
+      flexDirection: 'row-reverse' as const,
+      alignItems: 'stretch',
+      position: 'relative' as const
+    }),
+    ...(backgroundImage.position !== 'left' && backgroundImage.position !== 'right' && {
+      backgroundImage: `url(${backgroundImage.url})`,
+      backgroundSize: backgroundImage.position === 'fit' ? 'contain' : 
+                     backgroundImage.position === 'cover' ? 'cover' :
+                     backgroundImage.position === 'contain' ? 'contain' : 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    })
+  } : {};
 
   return (
     <section 
       className={rootClass}
+      style={backgroundImageStyle}
       data-marp-theme={shouldLoadSpaceTheme ? 'space' : undefined}
       data-thumbnail={isThumbnail ? 'true' : undefined}
       data-preview={isPreview ? 'true' : undefined}
       data-presentation={isPresentation ? 'true' : undefined}
       data-footer={footerContent ? 'true' : undefined}
       data-header={headerContent ? 'true' : undefined}
+      data-bg-image={backgroundImage ? 'true' : undefined}
+      data-bg-position={backgroundImage?.position || undefined}
     >
       {shouldLoadSpaceTheme && (
         <style>
@@ -154,25 +183,60 @@ export default function SlideRenderer({ content, className = '', theme = default
           {headerContent}
         </header>
       )}
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={{
-          h1: ({ children }) => <SlideHeading level={1} theme={t}>{children}</SlideHeading>,
-          h2: ({ children }) => <SlideHeading level={2} theme={t}>{children}</SlideHeading>,
-          h3: ({ children }) => <SlideHeading level={3} theme={t}>{children}</SlideHeading>,
-          h4: ({ children }) => <SlideHeading level={4} theme={t}>{children}</SlideHeading>,
-          h5: ({ children }) => <SlideHeading level={5} theme={t}>{children}</SlideHeading>,
-          h6: ({ children }) => <SlideHeading level={6} theme={t}>{children}</SlideHeading>,
-          p: ({ children }) => <SlideParagraph theme={t}>{children}</SlideParagraph>,
-          ul: ({ children }) => <SlideList ordered={false} theme={t}>{children}</SlideList>,
-          ol: ({ children }) => <SlideList ordered={true} theme={t}>{children}</SlideList>,
-          li: ({ children }) => <SlideListItem theme={t}>{children}</SlideListItem>,
-          code: ({ inline, children, ...props }: any) => <SlideCode inline={inline} theme={t}>{children}</SlideCode>,
-          blockquote: ({ children }) => <SlideBlockquote theme={t}>{children}</SlideBlockquote>,
+      
+      {/* Background image for split layouts */}
+      {backgroundImage && (backgroundImage.position === 'left' || backgroundImage.position === 'right') && (
+        <div 
+          className="absolute inset-0 w-1/2"
+          style={{
+            backgroundImage: `url(${backgroundImage.url})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            left: backgroundImage.position === 'left' ? '0' : 'auto',
+            right: backgroundImage.position === 'right' ? '0' : 'auto',
+            zIndex: 1
+          }}
+        />
+      )}
+      
+      {/* Content wrapper for split layouts */}
+      <div 
+        className={cn(
+          backgroundImage && (backgroundImage.position === 'left' || backgroundImage.position === 'right') 
+            ? "flex-1 flex flex-col justify-center p-8 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg relative z-10" 
+            : "flex-1 flex flex-col justify-center"
+        )}
+        style={{
+          ...(backgroundImage && (backgroundImage.position === 'left' || backgroundImage.position === 'right') && {
+            maxWidth: '50%',
+            marginLeft: backgroundImage.position === 'left' ? 'auto' : '0',
+            marginRight: backgroundImage.position === 'right' ? 'auto' : '0',
+            marginTop: '2rem',
+            marginBottom: '2rem'
+          })
         }}
       >
-        {cleanedContent}
-      </ReactMarkdown>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            h1: ({ children }) => <SlideHeading level={1} theme={t}>{children}</SlideHeading>,
+            h2: ({ children }) => <SlideHeading level={2} theme={t}>{children}</SlideHeading>,
+            h3: ({ children }) => <SlideHeading level={3} theme={t}>{children}</SlideHeading>,
+            h4: ({ children }) => <SlideHeading level={4} theme={t}>{children}</SlideHeading>,
+            h5: ({ children }) => <SlideHeading level={5} theme={t}>{children}</SlideHeading>,
+            h6: ({ children }) => <SlideHeading level={6} theme={t}>{children}</SlideHeading>,
+            p: ({ children }) => <SlideParagraph theme={t}>{children}</SlideParagraph>,
+            ul: ({ children }) => <SlideList ordered={false} theme={t}>{children}</SlideList>,
+            ol: ({ children }) => <SlideList ordered={true} theme={t}>{children}</SlideList>,
+            li: ({ children }) => <SlideListItem theme={t}>{children}</SlideListItem>,
+            code: ({ inline, children, ...props }: any) => <SlideCode inline={inline} theme={t}>{children}</SlideCode>,
+            blockquote: ({ children }) => <SlideBlockquote theme={t}>{children}</SlideBlockquote>,
+          }}
+        >
+          {cleanedContent}
+        </ReactMarkdown>
+      </div>
       {footerContent && (
         <footer style={{ 
           position: 'absolute', 
