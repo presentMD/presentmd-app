@@ -65,39 +65,39 @@ const SlideHeading = ({ level, children, theme }: { level: number; children: Rea
   const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements;
   return React.createElement(
     HeadingTag,
-    { className: cn(base, levels[level as keyof typeof levels], themeConfigs[theme].heading) },
+    { className: cn(base, levels[level as keyof typeof levels], themeConfigs[theme]?.heading || themeConfigs[defaultTheme].heading) },
     children
   );
 };
 
 const SlideParagraph = ({ children, theme }: { children: React.ReactNode; theme: string }) => (
-  <p className={themeConfigs[theme].paragraph}>{children}</p>
+  <p className={themeConfigs[theme]?.paragraph || themeConfigs[defaultTheme].paragraph}>{children}</p>
 );
 
 const SlideList = ({ ordered, children, theme }: { ordered: boolean; children: React.ReactNode; theme: string }) => {
   const ListTag = ordered ? 'ol' : 'ul';
   return React.createElement(
     ListTag,
-    { className: themeConfigs[theme].list },
+    { className: themeConfigs[theme]?.list || themeConfigs[defaultTheme].list },
     children
   );
 };
 
 const SlideListItem = ({ children, theme }: { children: React.ReactNode; theme: string }) => (
-  <li className={themeConfigs[theme].listItem}>{children}</li>
+  <li className={themeConfigs[theme]?.listItem || themeConfigs[defaultTheme].listItem}>{children}</li>
 );
 
 const SlideCode = ({ inline, children, theme }: { inline?: boolean; children: React.ReactNode; theme: string }) =>
   inline ? (
-    <code className={themeConfigs[theme].code}>{children}</code>
+    <code className={themeConfigs[theme]?.code || themeConfigs[defaultTheme].code}>{children}</code>
   ) : (
-    <pre className={themeConfigs[theme].pre}>
+    <pre className={themeConfigs[theme]?.pre || themeConfigs[defaultTheme].pre}>
       <code>{children}</code>
     </pre>
   );
 
 const SlideBlockquote = ({ children, theme }: { children: React.ReactNode; theme: string }) => (
-  <blockquote className={themeConfigs[theme].blockquote}>{children}</blockquote>
+  <blockquote className={themeConfigs[theme]?.blockquote || themeConfigs[defaultTheme].blockquote}>{children}</blockquote>
 );
 
 export default function SlideRenderer({ content, className = '', theme = defaultTheme }: { content: string; className?: string; theme?: string }) {
@@ -195,7 +195,13 @@ export default function SlideRenderer({ content, className = '', theme = default
             backgroundRepeat: 'no-repeat',
             left: backgroundImage.position === 'left' ? '0' : 'auto',
             right: backgroundImage.position === 'right' ? '0' : 'auto',
-            zIndex: 1
+            zIndex: 1,
+            top: 0,
+            bottom: 0
+          }}
+          onError={(e) => {
+            console.warn('Failed to load background image:', backgroundImage.url);
+            e.currentTarget.style.display = 'none';
           }}
         />
       )}

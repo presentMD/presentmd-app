@@ -2,8 +2,9 @@
 function isMetadataOnlySlide(slide: string): boolean {
   if (!slide.trim()) return true;
   
-  // Remove all metadata lines (expanded list)
-  const withoutMetadata = slide.replace(/^(theme|title|class|paginate|marp|size|author|date|backgroundColor|backgroundImage|color|footer|header|style|transition|math|headingDivider|inlineSVG|html|layout|background|class|_class|_paginate|_size|_theme|_style|_transition|_math|_headingDivider|_inlineSVG|_html|_backgroundColor|_backgroundImage|_color|_footer|_header):\s*.*$/gm, '');
+  // Remove all metadata lines (expanded list) - using a more efficient approach
+  const metadataPattern = /^(theme|title|class|paginate|marp|size|author|date|backgroundColor|backgroundImage|color|footer|header|style|transition|math|headingDivider|inlineSVG|html|layout|background|_class|_paginate|_size|_theme|_style|_transition|_math|_headingDivider|_inlineSVG|_html|_backgroundColor|_backgroundImage|_color|_footer|_header):\s*.*$/gm;
+  const withoutMetadata = slide.replace(metadataPattern, '');
   
   // Remove YAML frontmatter blocks
   const withoutYaml = withoutMetadata.replace(/^---\s*[\s\S]*?---\s*/m, '');
@@ -147,10 +148,13 @@ export function extractBackgroundImage(slideContent: string): { url: string; pos
   // Look for ![bg left](url) or ![bg right](url) or ![bg](url) patterns
   const bgMatch = slideContent.match(/!\[bg(?:\s+(left|right|fit|cover|contain))?\]\(([^)]+)\)/i);
   if (bgMatch) {
-    return {
-      url: bgMatch[2].trim(),
-      position: bgMatch[1]?.trim() || 'cover'
-    };
+    const url = bgMatch[2].trim();
+    const position = bgMatch[1]?.trim() || 'cover';
+    
+    // Basic URL validation
+    if (url && (url.startsWith('http') || url.startsWith('/') || url.startsWith('./') || url.startsWith('../'))) {
+      return { url, position };
+    }
   }
   return null;
 }

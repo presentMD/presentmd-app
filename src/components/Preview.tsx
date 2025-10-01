@@ -42,7 +42,9 @@ export default function Preview({ markdown, current, onChangeSlide, customCss, t
         el.focus({ preventScroll: true });
       }
     }, 50);
-    return () => clearTimeout(id);
+    return () => {
+      clearTimeout(id);
+    };
   }, [current, thumbPage, slides.length]);
 
   // Speaker notes
