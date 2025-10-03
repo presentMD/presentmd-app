@@ -2,6 +2,8 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { cn } from '@/lib/utils';
 import { extractFooterContent, extractHeaderContent, cleanSlideContent, extractBackgroundImage } from './utils';
 
@@ -224,7 +226,8 @@ export default function SlideRenderer({ content, className = '', theme = default
         }}
       >
         <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
+          remarkPlugins={[remarkGfm, remarkMath]}
+          rehypePlugins={[rehypeKatex]}
           components={{
             h1: ({ children }) => <SlideHeading level={1} theme={t}>{children}</SlideHeading>,
             h2: ({ children }) => <SlideHeading level={2} theme={t}>{children}</SlideHeading>,
