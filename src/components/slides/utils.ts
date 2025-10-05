@@ -143,6 +143,18 @@ export function extractHeaderContent(slideContent: string): string | null {
   return headerMatch ? headerMatch[1].trim() : null;
 }
 
+// Extract color directive from slide
+export function extractColorDirective(slideContent: string): string | null {
+  const colorMatch = slideContent.match(/<!--\s*_color:\s*([^-\s][^>]*?)\s*-->/i);
+  return colorMatch ? colorMatch[1].trim() : null;
+}
+
+// Extract backgroundColor directive from slide
+export function extractBackgroundColorDirective(slideContent: string): string | null {
+  const backgroundColorMatch = slideContent.match(/<!--\s*_backgroundColor:\s*([^-\s][^>]*?)\s*-->/i);
+  return backgroundColorMatch ? backgroundColorMatch[1].trim() : null;
+}
+
 // Extract background image information from slide content
 export function extractBackgroundImage(slideContent: string): { url: string; position: string } | null {
   // Look for ![bg left](url) or ![bg right](url) or ![bg](url) patterns

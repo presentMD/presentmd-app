@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import MarkdownEditor from "./MarkdownEditor";
 import CssEditor from "./CssEditor";
 
@@ -66,8 +66,8 @@ const TabbedEditor = ({
           onClick={onReset} 
           className="shadow-sm"
         >
-          <RotateCcw className="w-3 h-3 mr-1" />
-          Reset
+          <Trash2 className="w-3 h-3 mr-1" />
+          Clear
         </Button>
       </div>
       

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import TabbedEditor from "@/components/TabbedEditor";
 import Preview from "@/components/Preview";
-import { ChevronLeft, ChevronRight, X, Monitor, Download, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Monitor, Download } from "lucide-react";
 import SlideRenderer from "@/components/slides/SlideRenderer";
 import { parseSlides, extractTheme, cleanSlideContent, determineSlideClass } from "@/components/slides/utils";
 
@@ -30,6 +30,13 @@ By Your Name
 * Bullet 2
 * Bullet 3
 
+---
+
+<!-- _color: red -->
+## Custom Text Color
+
+Red text on this slide
+
 `;
 
 // Theme definitions
@@ -52,30 +59,16 @@ const Index = () => {
   
   const { toast } = useToast();
 
-  // Function to reset to clean presentation
-  const resetToCleanPresentation = () => {
-    setMd(initialMd);
+  // Function to clear the editor
+  const clearEditor = () => {
+    setMd('');
     toast({
-      title: "Reset",
-      description: "Reset to basic 1-slide template",
+      title: "Cleared",
+      description: "Editor content has been cleared",
     });
   };
 
-  // Auto-detect when content is cleared and reset to clean presentation
-  useEffect(() => {
-    const trimmedMd = md.trim();
-    const isEmpty = trimmedMd === '' || trimmedMd === '---' || trimmedMd === '---\n---';
-    const isInitialContent = md === initialMd;
-    
-    // Only auto-reset if content is empty AND it's not already the initial content
-    if (isEmpty && !isInitialContent) {
-      setMd(initialMd);
-      toast({
-        title: "Auto-Reset",
-        description: "Content was cleared, reset to clean presentation",
-      });
-    }
-  }, [md]);
+  // Auto-reset behavior removed - users can now have empty content
 
   // Use selected theme from UI instead of parsing from markdown
   const currentTheme = selectedTheme;
@@ -749,7 +742,7 @@ const Index = () => {
                   onCustomCssChange={handleCustomCssChange}
                   isCustomTheme={isCustomTheme}
                   baseThemeName={baseThemeName}
-                  onReset={resetToCleanPresentation}
+                  onReset={clearEditor}
                 />
               </div>
             </div>

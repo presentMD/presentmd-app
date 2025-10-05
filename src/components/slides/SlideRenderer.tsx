@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { cn } from '@/lib/utils';
-import { extractFooterContent, extractHeaderContent, cleanSlideContent, extractBackgroundImage } from './utils';
+import { extractFooterContent, extractHeaderContent, cleanSlideContent, extractBackgroundImage, extractColorDirective, extractBackgroundColorDirective } from './utils';
 
 // Theme configs. Add more themes as desired!
 const themeConfigs = {
@@ -118,6 +118,9 @@ export default function SlideRenderer({ content, className = '', theme = default
   const footerContent = extractFooterContent(content);
   const headerContent = extractHeaderContent(content);
   const backgroundImage = extractBackgroundImage(content);
+  const customColor = extractColorDirective(content);
+  const customBackgroundColor = extractBackgroundColorDirective(content);
+  
   
   // Clean the content for rendering
   const cleanedContent = cleanSlideContent(content);
@@ -127,6 +130,8 @@ export default function SlideRenderer({ content, className = '', theme = default
     className?.includes('presentation-mode') ? "p-16 flex flex-col justify-center h-full w-full" : "p-8 flex flex-col justify-center h-full w-full",
     shouldLoadSpaceTheme && "space-theme-section",
     backgroundImage && "bg-image-slide",
+    customColor && "custom-color-override",
+    customBackgroundColor && "custom-bg-override",
     className
   );
 
@@ -154,10 +159,21 @@ export default function SlideRenderer({ content, className = '', theme = default
     })
   } : {};
 
+  // Generate custom color styles using CSS custom properties
+  const customColorStyle = customColor
+    ? { '--custom-text-color': customColor } as React.CSSProperties
+    : {};
+
+  // Generate custom background color styles using CSS custom properties
+  const customBackgroundColorStyle = customBackgroundColor
+    ? { '--custom-bg-color': customBackgroundColor } as React.CSSProperties
+    : {};
+
+
   return (
     <section 
       className={rootClass}
-      style={backgroundImageStyle}
+      style={{...backgroundImageStyle, ...customColorStyle, ...customBackgroundColorStyle}}
       data-marp-theme={shouldLoadSpaceTheme ? 'space' : undefined}
       data-thumbnail={isThumbnail ? 'true' : undefined}
       data-preview={isPreview ? 'true' : undefined}
@@ -170,6 +186,21 @@ export default function SlideRenderer({ content, className = '', theme = default
       {shouldLoadSpaceTheme && (
         <style>
           {`@import url('/themes/space.css');`}
+        </style>
+      )}
+      {(customColor || customBackgroundColor) && (
+        <style>
+          {`
+            .custom-color-override {
+              color: var(--custom-text-color) !important;
+            }
+            .custom-bg-override {
+              background-color: var(--custom-bg-color) !important;
+            }
+            .custom-color-override * {
+              color: var(--custom-text-color) !important;
+            }
+          `}
         </style>
       )}
       {headerContent && (
