@@ -22,7 +22,7 @@ function hello() {
 
 ---
 
-![bg](https://example.com/image.jpg)
+![bg](/images/NASA-main_image_star-forming_region_carina_nircam_final-5mb.jpeg)
 
 # Background Image Slide
 
@@ -50,7 +50,7 @@ This slide won't show page numbers
 
 ---
 
-![bg left](image.jpg)
+![bg left](/images/keith-hardy-PP8Escz15d8-unsplash.jpg)
 
 ## Split Layout
 
@@ -59,7 +59,7 @@ content on the right
 
 ---
 
-![bg fit](image.jpg)
+![bg fit](/images/wiki-commons-caravan-in-the-desert.jpg)
 
 ## Fitted Background
 

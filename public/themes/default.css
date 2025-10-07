@@ -308,6 +308,27 @@
   font-size: clamp(18px, 2.5vw, 32px);
 }
 
+/* Column layout support */
+.presentmd-scope .columns {
+  display: flex;
+  gap: 2em;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.presentmd-scope .columns > div {
+  flex: 1;
+  min-width: 0; /* Prevents flex items from overflowing */
+}
+
+/* Responsive column behavior */
+@media (max-width: 768px) {
+  .presentmd-scope .columns {
+    flex-direction: column;
+    gap: 1em;
+  }
+}
+
 /* Additional responsive improvements */
 @media (max-width: 768px) {
   .presentmd-scope section:not(.title-slide) {

@@ -38,7 +38,7 @@ function hello() {
 
 ---
 
-![bg](https://example.com/image.jpg)
+![bg](/images/NASA-main_image_star-forming_region_carina_nircam_final-5mb.jpeg)
 
 # Background Image Slide
 
@@ -126,7 +126,7 @@ This slide won't show page numbers
 
 ---
 
-![bg left](image.jpg)
+![bg left](/images/keith-hardy-PP8Escz15d8-unsplash.jpg)
 
 ## Split Layout
 
@@ -135,7 +135,7 @@ content on the right
 
 ---
 
-![bg fit](image.jpg)
+![bg fit](/images/wiki-commons-caravan-in-the-desert.jpg)
 
 ## Fitted Background
 
@@ -282,6 +282,16 @@ section .columns > div {
   flex: 1;
 }
 
+/* Alternative column styling */
+.columns {
+  display: flex;
+  justify-content: space-between;
+}
+
+.columns > div {
+  width: 48%;
+}
+
 /* Highlight box */
 section .highlight {
   background: #fef3c7;
@@ -351,7 +361,9 @@ export default function HelpDialog() {
         <DialogHeader>
           <DialogTitle>Presentation Markdown Guide</DialogTitle>
           <DialogDescription>
-            Complete guide to markdown syntax and theme customization for presentations
+            Complete guide to markdown syntax and theme customization for presentations. 
+            Built on <a href="https://marp.app/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Marp</a> - 
+            learn more at <a href="https://marpit.marp.app/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">marpit.marp.app</a>
           </DialogDescription>
         </DialogHeader>
         
@@ -367,7 +379,8 @@ export default function HelpDialog() {
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Basic Presentation</h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Start with your content directly. Use <code>---</code> to separate slides. Themes are controlled via the theme selector in the editor.
+                    Start with your content directly. Use <code>---</code> to separate slides. 
+                    <strong>No YAML metadata required!</strong> Themes are controlled via the theme selector in the editor panel.
                   </p>
                   <CodeBlock code={MARP_EXAMPLES.basic} label="Basic Example" />
                 </div>
@@ -383,7 +396,7 @@ export default function HelpDialog() {
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Advanced Features</h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Marp supports math formulas, diagrams, and advanced layouts.
+                    Marp supports math formulas, diagrams, and advanced layouts. All themes include built-in column support.
                   </p>
                   <CodeBlock code={MARP_EXAMPLES.advanced} label="Advanced Example" />
                 </div>
@@ -393,11 +406,12 @@ export default function HelpDialog() {
                   <ul className="text-sm space-y-1 text-muted-foreground">
                     <li><strong>Slide separator:</strong> <code>---</code> creates new slides</li>
                     <li><strong>Directives:</strong> <code>&lt;!-- _property: value --&gt;</code> for slide-specific settings</li>
-                    <li><strong>Background images:</strong> <code>![bg](image.jpg)</code></li>
-                    <li><strong>Split layouts:</strong> <code>![bg left](image.jpg)</code></li>
+                    <li><strong>Background images:</strong> <code>![bg](image.jpg)</code>, <code>![bg left](image.jpg)</code>, <code>![bg fit](image.jpg)</code></li>
+                    <li><strong>Columns:</strong> <code>&lt;div class="columns"&gt;</code> - built into all themes</li>
                     <li><strong>Math:</strong> <code>$inline$</code> or <code>$$block$$</code></li>
                     <li><strong>Classes:</strong> <code>&lt;!-- _class: lead --&gt;</code></li>
                     <li><strong>Themes:</strong> Use the theme selector in the editor panel</li>
+                    <li><strong>No YAML required:</strong> Start writing immediately, themes are visual</li>
                   </ul>
                 </div>
               </div>
@@ -407,6 +421,25 @@ export default function HelpDialog() {
           <TabsContent value="themes" className="mt-4">
             <ScrollArea className="h-[60vh] pr-4">
               <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Theme Philosophy</h3>
+                  <div className="text-sm text-muted-foreground mb-3 space-y-2">
+                    <p>
+                      <strong>No YAML metadata required!</strong> This makes presentation development faster and more intuitive. 
+                      Instead of writing configuration files, you:
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>Select themes visually with the theme selector button</li>
+                      <li>See the current theme's CSS in the theme panel</li>
+                      <li>Edit CSS directly for instant customization</li>
+                      <li>Start writing content immediately without setup</li>
+                    </ul>
+                    <p>
+                      The theme panel always shows the current theme in CSS format, making it easy to understand and modify styles on the fly.
+                    </p>
+                  </div>
+                </div>
+
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Custom Theme</h3>
                   <p className="text-sm text-muted-foreground mb-3">
@@ -436,6 +469,7 @@ export default function HelpDialog() {
                   <ul className="text-sm space-y-1 text-muted-foreground">
                     <li><strong>Built-in themes:</strong> Default, Space, Desert (select from theme dropdown)</li>
                     <li><strong>Custom theme URL:</strong> Enter CSS URL in the custom theme option</li>
+                    <li><strong>Live CSS editing:</strong> Modify the theme panel CSS directly for instant changes</li>
                     <li><strong>Slide classes:</strong> <code>&lt;!-- _class: lead invert --&gt;</code></li>
                     <li><strong>Background colors:</strong> <code>&lt;!-- _backgroundColor: #ff0000 --&gt;</code></li>
                     <li><strong>Text colors:</strong> <code>&lt;!-- _color: white --&gt;</code></li>
@@ -444,10 +478,13 @@ export default function HelpDialog() {
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-2">Custom Themes:</h4>
+                  <h4 className="font-semibold mb-2">Workflow Benefits:</h4>
                   <ul className="text-sm space-y-1 text-muted-foreground">
-                    <li>Use custom CSS URLs for external themes</li>
-                    <li>Find more themes on GitHub and use their CDN URLs</li>
+                    <li><strong>No configuration files:</strong> Start writing content immediately</li>
+                    <li><strong>Visual theme selection:</strong> See themes before applying them</li>
+                    <li><strong>Live CSS editing:</strong> Real-time theme customization</li>
+                    <li><strong>External themes:</strong> Use CDN URLs for community themes</li>
+                    <li><strong>Learn more:</strong> Visit <a href="https://marp.app/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">marp.app</a> for advanced features</li>
                   </ul>
                 </div>
               </div>
