@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { sanitizePrompt } from '@/lib/security';
+import { handleLLMError } from '@/lib/errorHandler';
+import { API, TIMEOUTS } from '@/constants';
+import { log } from '@/lib/logger';
+import { generateMockResponse } from '@/services/mockLLM';
 
 interface LLMContextType {
   isGenerating: boolean;
@@ -37,16 +41,16 @@ export const LLMProvider: React.FC<LLMProviderProps> = ({ children }) => {
       }
 
       // Try to use a real LLM service
-      const response = await fetch('/api/generate', {
+      const response = await fetch(API.ENDPOINTS.GENERATE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           prompt: sanitizedPrompt,
-          model: 'gpt-3.5-turbo', // or 'gpt-4' for better quality
-          max_tokens: 1000,
-          temperature: 0.7,
+          model: API.MODELS.GPT_3_5_TURBO,
+          max_tokens: API.DEFAULT_OPTIONS.MAX_TOKENS,
+          temperature: API.DEFAULT_OPTIONS.TEMPERATURE,
         }),
       });
 
@@ -63,127 +67,22 @@ export const LLMProvider: React.FC<LLMProviderProps> = ({ children }) => {
       return data.content || data.text || data.choices?.[0]?.message?.content || 'No content generated';
     } catch (err) {
       // Fallback to mock response if API is not available
-      console.warn('LLM API not available, using mock response:', err);
+      log.warn('LLM API not available, using mock response', err);
       
       // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const startTime = Date.now();
+      await new Promise(resolve => setTimeout(resolve, TIMEOUTS.MOCK_API_RESPONSE));
+      const duration = Date.now() - startTime;
       
       // Generate a more realistic mock response based on the prompt
       const mockResponse = generateMockResponse(prompt);
+      log.llmRequest(prompt, false, duration);
       return mockResponse;
     } finally {
       setIsGenerating(false);
     }
   }, []);
 
-  // Helper function to generate more realistic mock responses
-  const generateMockResponse = (prompt: string): string => {
-    const lowerPrompt = prompt.toLowerCase();
-    
-    if (lowerPrompt.includes('improve') || lowerPrompt.includes('better')) {
-      return `# Enhanced Slide Content
-
-## Key Improvements
-- More engaging and compelling content
-- Better structure and flow
-- Clearer messaging and call-to-action
-
-## Main Points
-- Improved readability and visual hierarchy
-- Added relevant examples and data points
-- Enhanced with actionable insights
-
-## Next Steps
-- Review and customize as needed
-- Apply to your presentation`;
-    }
-    
-    if (lowerPrompt.includes('bullet') || lowerPrompt.includes('points')) {
-      return `# Slide Title
-
-## Key Points
-- First important point with clear value proposition
-- Second point highlighting benefits or features
-- Third point addressing potential concerns
-- Fourth point with actionable next steps
-
-## Additional Details
-- Supporting information
-- Relevant statistics or examples
-- Call-to-action or conclusion`;
-    }
-    
-    if (lowerPrompt.includes('engaging') || lowerPrompt.includes('compelling')) {
-      return `# Compelling Slide Title
-
-## Why This Matters
-- **Impact**: Clear value proposition
-- **Benefits**: Specific advantages for the audience
-- **Results**: Expected outcomes and success metrics
-
-## Key Insights
-- Insight 1: Supporting data or evidence
-- Insight 2: Real-world application
-- Insight 3: Future implications
-
-## Take Action
-- Next steps for implementation
-- How to get started
-- Contact information or resources`;
-    }
-    
-    if (lowerPrompt.includes('simplify') || lowerPrompt.includes('simple')) {
-      return `# Simple Slide Title
-
-## Main Message
-One clear, focused message that's easy to understand.
-
-## Key Points
-- Point 1
-- Point 2  
-- Point 3
-
-## Summary
-Brief conclusion or next step.`;
-    }
-    
-    if (lowerPrompt.includes('call-to-action') || lowerPrompt.includes('action')) {
-      return `# Slide Title
-
-## The Challenge
-Brief description of the problem or opportunity.
-
-## The Solution
-How we address this challenge.
-
-## Take Action
-- **Immediate**: What to do now
-- **Next Steps**: Follow-up actions
-- **Contact**: How to get help or more information
-
-## Call to Action
-Clear, compelling request for the audience to act.`;
-    }
-    
-    // Default response
-    return `# Improved Slide Content
-
-## Overview
-Based on your request, here's an enhanced version of your slide.
-
-## Key Points
-- Enhanced content structure
-- Improved readability
-- Better visual hierarchy
-
-## Details
-- Supporting information
-- Relevant examples
-- Clear next steps
-
-## Conclusion
-Ready to use in your presentation.`;
-  };
 
   const value: LLMContextType = {
     isGenerating,

@@ -17,7 +17,7 @@ export const sanitizeHTML = (html: string): string => {
 // Sanitize CSS content to prevent injection
 export const sanitizeCSS = (css: string): string => {
   // Remove potentially dangerous CSS
-  let sanitized = css
+  const sanitized = css
     .replace(/javascript:/gi, '')
     .replace(/expression\s*\(/gi, '')
     .replace(/@import/gi, '')
@@ -50,7 +50,7 @@ export const sanitizeThemeName = (themeName: string): string => {
 // Validate markdown content for malicious patterns
 export const sanitizeMarkdown = (markdown: string): string => {
   // Remove potentially dangerous HTML tags
-  let sanitized = markdown
+  const sanitized = markdown
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
     .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')

@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SlideRenderer from "@/components/slides/SlideRenderer";
 import { parseSlides, cleanSlideContent } from "@/components/slides/utils";
+import { PRESENTATION_KEYS } from "@/constants";
 
 
 const decode = (s: string | null) => {
@@ -32,16 +33,16 @@ export default function Present() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+      if (PRESENTATION_KEYS.NEXT.includes(e.key)) {
         e.preventDefault();
         setIndex((i) => Math.min(i + 1, slides.length - 1));
       }
-      if (e.key === "ArrowLeft" || e.key === "PageUp" || e.key === "Backspace") {
+      if (PRESENTATION_KEYS.PREV.includes(e.key)) {
         e.preventDefault();
         setIndex((i) => Math.max(i - 1, 0));
       }
-      if (e.key.toLowerCase() === "home") setIndex(0);
-      if (e.key.toLowerCase() === "end") setIndex(slides.length - 1);
+      if (PRESENTATION_KEYS.FIRST.includes(e.key.toLowerCase())) setIndex(0);
+      if (PRESENTATION_KEYS.LAST.includes(e.key.toLowerCase())) setIndex(slides.length - 1);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

@@ -6,6 +6,7 @@ import { autocompletion, CompletionContext, Completion } from "@codemirror/autoc
 import { oneDark } from "@codemirror/theme-one-dark";
 import { useTheme } from "@/contexts/ThemeContext";
 import { EditorView } from "@codemirror/view";
+import { EditorErrorBoundary } from "@/components/ErrorBoundary";
 
 export interface MarkdownEditorProps {
   value: string;
@@ -121,27 +122,29 @@ export default function MarkdownEditor({ value, onChange, className }: MarkdownE
   );
 
   return (
-    <div ref={ref} className={`h-full overflow-hidden ${className}`}>
-      <div className="h-full overflow-auto scrollbar-visible">
-        <CodeMirror
-          value={value}
-          height="100%"
-          width="100%"
-          extensions={extensions}
-          onChange={onChange}
-          theme={theme === 'dark' ? oneDark : undefined}
-          basicSetup={{ 
-            highlightActiveLine: true, 
-            lineNumbers: true,
-            foldGutter: true,
-          }}
-          style={{
-            fontSize: '14px',
-            maxWidth: '100%',
-            overflow: 'auto'
-          }}
-        />
+    <EditorErrorBoundary>
+      <div ref={ref} className={`h-full overflow-hidden ${className}`}>
+        <div className="h-full overflow-auto scrollbar-visible">
+          <CodeMirror
+            value={value}
+            height="100%"
+            width="100%"
+            extensions={extensions}
+            onChange={onChange}
+            theme={theme === 'dark' ? oneDark : undefined}
+            basicSetup={{ 
+              highlightActiveLine: true, 
+              lineNumbers: true,
+              foldGutter: true,
+            }}
+            style={{
+              fontSize: '14px',
+              maxWidth: '100%',
+              overflow: 'auto'
+            }}
+          />
+        </div>
       </div>
-    </div>
+    </EditorErrorBoundary>
   );
 }

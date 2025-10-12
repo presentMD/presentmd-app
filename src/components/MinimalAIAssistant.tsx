@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Sparkles, AlertTriangle, X } from 'lucide-react';
 import { useLLM } from '@/contexts/LLMContext';
 import { useToast } from '@/hooks/use-toast';
+import { handleLLMError } from '@/lib/errorHandler';
 
 interface MinimalAIAssistantProps {
   currentSlideContent: string;
@@ -59,11 +60,7 @@ For easy parsing please provide in the response just clean markdown text for the
         description: "The slide has been updated with your changes.",
       });
     } catch (err) {
-      toast({
-        title: "Modification failed",
-        description: err instanceof Error ? err.message : "Failed to modify slide",
-        variant: "destructive",
-      });
+      handleLLMError(err);
     } finally {
       setIsGenerating(false);
     }

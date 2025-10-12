@@ -3,6 +3,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import SlideRenderer from "@/components/slides/SlideRenderer";
 import { parseSlides, extractSlideTitles, extractSpeakerNotes, cleanSlideContent, determineSlideClass } from "@/components/slides/utils";
+import { PreviewErrorBoundary } from "@/components/ErrorBoundary";
+import { THUMBNAIL_CONFIG, TIMEOUTS } from "@/constants";
 
 
 interface PreviewProps {
@@ -19,14 +21,13 @@ export default function Preview({ markdown, current, onChangeSlide, customCss, t
   const titles = useMemo(() => extractSlideTitles(slides), [slides]);
 
   // Thumbnail pagination
-  const THUMB_PER_PAGE = 4;
   const [thumbPage, setThumbPage] = useState(0);
-  const pageCount = Math.max(1, Math.ceil(slides.length / THUMB_PER_PAGE));
+  const pageCount = Math.max(1, Math.ceil(slides.length / THUMBNAIL_CONFIG.PER_PAGE));
 
   // Keep thumbnail page in sync with current slide
   useEffect(() => {
     if (!Number.isFinite(current)) return;
-    const page = Math.floor(current / THUMB_PER_PAGE);
+    const page = Math.floor(current / THUMBNAIL_CONFIG.PER_PAGE);
     if (page !== thumbPage) setThumbPage(page);
   }, [current, thumbPage]);
 
@@ -41,7 +42,7 @@ export default function Preview({ markdown, current, onChangeSlide, customCss, t
         el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         el.focus({ preventScroll: true });
       }
-    }, 50);
+    }, TIMEOUTS.THUMBNAIL_SCROLL);
     return () => {
       clearTimeout(id);
     };
@@ -55,7 +56,8 @@ export default function Preview({ markdown, current, onChangeSlide, customCss, t
   }, [slides, current]);
 
   return (
-    <div className="h-full flex flex-col">
+    <PreviewErrorBoundary>
+      <div className="h-full flex flex-col">
       {/* Main slide area - 16:9 aspect ratio */}
       <div className="flex-1 rounded-md border bg-transparent flex items-center justify-center overflow-hidden mb-4 p-4">
         <div className="w-full max-w-none aspect-[16/9] shadow-lg">
@@ -99,14 +101,16 @@ export default function Preview({ markdown, current, onChangeSlide, customCss, t
               onClick={() => onChangeSlide(Math.max(0, current - 1))}
               disabled={current === 0}
               className="px-3 py-1 text-xs rounded bg-muted hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Previous slide"
             >
               ‹
             </button>
-            <span className="text-xs text-muted-foreground px-2">{current + 1} / {slides.length}</span>
+            <span className="text-xs text-muted-foreground px-2" aria-live="polite">{current + 1} / {slides.length}</span>
             <button
               onClick={() => onChangeSlide(Math.min(slides.length - 1, current + 1))}
               disabled={current === slides.length - 1}
               className="px-3 py-1 text-xs rounded bg-muted hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Next slide"
             >
               ›
             </button>
@@ -116,13 +120,13 @@ export default function Preview({ markdown, current, onChangeSlide, customCss, t
         <div className="px-4 py-3">
           <ScrollArea className="w-full">
             <div ref={thumbsStripRef} className="flex gap-2 p-1" style={{ minHeight: 104 }}>
-              {Array.from({ length: THUMB_PER_PAGE }).map((_, slotIndex) => {
-                const globalIndex = thumbPage * THUMB_PER_PAGE + slotIndex;
+              {Array.from({ length: THUMBNAIL_CONFIG.PER_PAGE }).map((_, slotIndex) => {
+                const globalIndex = thumbPage * THUMBNAIL_CONFIG.PER_PAGE + slotIndex;
                 const hasSlide = globalIndex < slides.length;
                 if (!hasSlide) return <div key={`ph-${slotIndex}`} className="w-32 h-24 bg-muted/20 rounded border border-border" />;
 
                 const slideContent = slides[globalIndex];
-                const scale = 0.25;
+                const scale = THUMBNAIL_CONFIG.SCALE;
 
                 return (
                   <div
@@ -136,8 +140,10 @@ export default function Preview({ markdown, current, onChangeSlide, customCss, t
                       current === globalIndex ? "border-primary ring-2 ring-primary/20 shadow-lg bg-primary/5" : "border-border hover:border-muted-foreground"
                     )}
                     onClick={() => onChangeSlide(globalIndex)}
+                    aria-label={`Go to slide ${globalIndex + 1}: ${titles[globalIndex]}`}
+                    aria-current={current === globalIndex ? "true" : "false"}
                   >
-                    <div className="w-32 h-24 bg-background rounded overflow-hidden">
+                    <div className={`w-${THUMBNAIL_CONFIG.WIDTH} h-${THUMBNAIL_CONFIG.HEIGHT} bg-background rounded overflow-hidden`}>
                       <div
                         className="w-full h-full"
                         style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: `${100 / scale}%`, height: `${100 / scale}%`, overflow: 'hidden' }}
@@ -155,6 +161,7 @@ export default function Preview({ markdown, current, onChangeSlide, customCss, t
           </ScrollArea>
         </div>
       </div>
-    </div>
+      </div>
+    </PreviewErrorBoundary>
   );
 }
