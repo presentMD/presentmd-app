@@ -9,6 +9,9 @@
 /* Import Neue Haas Grotesk Text Pro font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Import fonts for lead slides */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Bebas+Neue&display=swap');
+
 /* Scope theme under .presentmd-scope */
 .presentmd-scope section {
   --h1-color: #ffffff;
@@ -422,4 +425,98 @@
   --paginate-color: #999;
   background: #222;
   color: #eee;
+}
+
+/* Lead slides - special formatting for important slides */
+.presentmd-scope section.lead {
+  background: linear-gradient(135deg, #4a148c 0%, #c2185b 50%, #ff6f00 100%);
+  color: #FFF8E7;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: clamp(40px, 8vw, 120px);
+  font-family: 'Poppins', 'Bebas Neue', sans-serif;
+}
+
+.presentmd-scope section.lead h1 {
+  color: #FFF8E7;
+  font-family: 'Poppins', 'Bebas Neue', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.5em, 6vw, 4em);
+  text-align: center;
+  margin-bottom: 0.5em;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.02em;
+}
+
+.presentmd-scope section.lead h2 {
+  color: #FFF8E7;
+  font-family: 'Poppins', 'Bebas Neue', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2em, 5vw, 3em);
+  text-align: center;
+  margin-bottom: 0.5em;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.01em;
+}
+
+.presentmd-scope section.lead h3,
+.presentmd-scope section.lead h4,
+.presentmd-scope section.lead h5,
+.presentmd-scope section.lead h6 {
+  color: #FFF8E7;
+  font-family: 'Poppins', 'Bebas Neue', sans-serif;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.presentmd-scope section.lead p {
+  color: #FFF8E7;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.2em, 3vw, 1.8em);
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.presentmd-scope section.lead ul,
+.presentmd-scope section.lead ol {
+  text-align: center;
+  color: #FFF8E7;
+  font-family: 'Poppins', sans-serif;
+}
+
+.presentmd-scope section.lead li {
+  color: #FFF8E7;
+  font-size: clamp(1.1em, 2.8vw, 1.6em);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.presentmd-scope section.lead code {
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFF8E7;
+  backdrop-filter: blur(8px);
+}
+
+.presentmd-scope section.lead strong {
+  font-weight: 900;
+  color: #FFE54F;
+  text-shadow: 0 2px 8px rgba(255, 229, 79, 0.5);
+}
+
+/* Responsive adjustments for lead slides */
+.presentmd-scope section.lead[data-thumbnail] {
+  padding: clamp(20px, 3vw, 40px);
+}
+
+.presentmd-scope section.lead[data-preview] {
+  padding: clamp(30px, 5vw, 80px);
+}
+
+.presentmd-scope section.lead[data-presentation] {
+  padding: clamp(40px, 8vw, 120px);
 }

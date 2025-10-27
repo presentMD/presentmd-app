@@ -178,13 +178,11 @@ export function cleanSlideContent(slideContent: string): string {
   // Remove frontmatter (lines starting with key:)
   cleaned = cleaned.replace(/^(theme|title|class|paginate|marp|size|author|date):\s*.*$/gm, '');
   
-  // Preserve _class directives while removing other HTML comments
-  cleaned = cleaned.replace(/<!--\s*_class:\s*(.*?)\s*-->/g, (match, className) => {
-    return `<div class="${className}"></div>`;
-  });
+  // Remove _class directives (they're used for slide styling, not content)
+  cleaned = cleaned.replace(/<!--\s*_class:\s*.*?\s*-->/g, '');
 
   // Remove other HTML comments (including footer and header comments)
-  cleaned = cleaned.replace(/<!--(?!\s*_class:).*?-->/gs, '');
+  cleaned = cleaned.replace(/<!--.*?-->/gs, '');
   
   // Remove background image syntax (used for styling, not content)
   cleaned = cleaned.replace(/!\[bg(?:\s+(left|right|fit|cover|contain))?\]\([^)]+\)/gi, '');
