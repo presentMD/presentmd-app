@@ -10,8 +10,6 @@ export const THEME_DEFINITIONS = [
 
 // Timing constants
 export const TIMEOUTS = {
-  THEME_LOAD: 50,
-  MOCK_API_RESPONSE: 1500,
   THUMBNAIL_SCROLL: 50,
 } as const;
 
@@ -70,40 +68,6 @@ export const SECURITY = {
   ],
   MAX_PROMPT_LENGTH: 10000,
   MAX_THEME_NAME_LENGTH: 50,
-} as const;
-
-// CSS class constants
-export const CSS_CLASSES = {
-  PRESENTMD_SCOPE: 'presentmd-scope',
-  PRESENTATION_MODE: 'presentation-mode',
-  TITLE_SLIDE: 'title-slide',
-  SECOND_SLIDE: 'second-slide',
-  CUSTOM_COLOR_OVERRIDE: 'custom-color-override',
-  CUSTOM_BG_OVERRIDE: 'custom-bg-override',
-  BG_IMAGE_SLIDE: 'bg-image-slide',
-  SPACE_THEME_SECTION: 'space-theme-section',
-} as const;
-
-// API constants
-export const API = {
-  ENDPOINTS: {
-    GENERATE: '/api/generate',
-  },
-  MODELS: {
-    GPT_3_5_TURBO: 'gpt-3.5-turbo',
-    GPT_4: 'gpt-4',
-  },
-  DEFAULT_OPTIONS: {
-    MAX_TOKENS: 1000,
-    TEMPERATURE: 0.7,
-  },
-} as const;
-
-// Local storage keys
-export const STORAGE_KEYS = {
-  THEME: 'presentmd-theme',
-  CUSTOM_CSS: 'presentmd-custom-css',
-  LAST_THEME: 'presentmd-last-theme',
 } as const;
 
 // Regex patterns

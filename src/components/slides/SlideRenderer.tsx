@@ -177,7 +177,7 @@ export default function SlideRenderer({ content, className = '', theme = default
       
       {/* Background image for split layouts */}
       {backgroundImage && (backgroundImage.position === 'left' || backgroundImage.position === 'right') && (
-        <div 
+        <div
           className="absolute inset-0 w-1/2"
           style={{
             backgroundImage: `url(${backgroundImage.url})`,
@@ -189,10 +189,6 @@ export default function SlideRenderer({ content, className = '', theme = default
             zIndex: 1,
             top: 0,
             bottom: 0
-          }}
-          onError={(e) => {
-            console.warn('Failed to load background image:', backgroundImage.url);
-            e.currentTarget.style.display = 'none';
           }}
         />
       )}

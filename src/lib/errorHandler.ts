@@ -127,12 +127,3 @@ export const handleExportError = (error: unknown): void => {
   });
 };
 
-export const handleLLMError = (error: unknown): void => {
-  handleError(error, 'LLMContext', {
-    showToast: true,
-    additionalContext: {
-      action: 'generateText',
-      component: 'LLMContext'
-    }
-  });
-};

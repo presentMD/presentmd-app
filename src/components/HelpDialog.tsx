@@ -362,8 +362,8 @@ export default function HelpDialog() {
           <DialogTitle>Presentation Markdown Guide</DialogTitle>
           <DialogDescription>
             Complete guide to markdown syntax and theme customization for presentations. 
-            Built on <a href="https://marp.app/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Marp</a> - 
-            learn more at <a href="https://marpit.marp.app/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">marpit.marp.app</a>
+            Built on <a href="https://marp.app/" target="_blank" rel="noopener noreferrer" aria-label="Marp (opens in new tab)" className="text-blue-600 hover:underline">Marp</a> -
+            learn more at <a href="https://marpit.marp.app/" target="_blank" rel="noopener noreferrer" aria-label="marpit.marp.app (opens in new tab)" className="text-blue-600 hover:underline">marpit.marp.app</a>
           </DialogDescription>
         </DialogHeader>
         
@@ -484,7 +484,7 @@ export default function HelpDialog() {
                     <li><strong>Visual theme selection:</strong> See themes before applying them</li>
                     <li><strong>Live CSS editing:</strong> Real-time theme customization</li>
                     <li><strong>External themes:</strong> Use CDN URLs for community themes</li>
-                    <li><strong>Learn more:</strong> Visit <a href="https://marp.app/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">marp.app</a> for advanced features</li>
+                    <li><strong>Learn more:</strong> Visit <a href="https://marp.app/" target="_blank" rel="noopener noreferrer" aria-label="marp.app (opens in new tab)" className="text-blue-600 hover:underline">marp.app</a> for advanced features</li>
                   </ul>
                 </div>
               </div>

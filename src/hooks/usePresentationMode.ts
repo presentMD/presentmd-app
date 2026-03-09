@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { PRESENTATION_KEYS } from '@/constants';
 import { log } from '@/lib/logger';
 
@@ -17,9 +17,11 @@ export interface PresentationModeState {
 export const usePresentationMode = (totalSlides: number): PresentationModeState => {
   const [isPresentationMode, setIsPresentationMode] = useState(false);
   const [presentationSlideIndex, setPresentationSlideIndex] = useState(0);
+  const slideIndexRef = useRef(presentationSlideIndex);
+  slideIndexRef.current = presentationSlideIndex;
 
   const enterPresentationMode = useCallback((startIndex: number = 0) => {
-    const slideIndex = Math.min(startIndex, totalSlides - 1);
+    const slideIndex = Math.max(0, Math.min(startIndex, totalSlides - 1));
     setPresentationSlideIndex(slideIndex);
     setIsPresentationMode(true);
     log.presentationMode('enter', slideIndex);
@@ -27,8 +29,8 @@ export const usePresentationMode = (totalSlides: number): PresentationModeState 
 
   const exitPresentationMode = useCallback(() => {
     setIsPresentationMode(false);
-    log.presentationMode('exit', presentationSlideIndex);
-  }, [presentationSlideIndex]);
+    log.presentationMode('exit', slideIndexRef.current);
+  }, []);
 
   const goToNextSlide = useCallback(() => {
     setPresentationSlideIndex(prev => Math.min(prev + 1, totalSlides - 1));

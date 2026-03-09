@@ -102,14 +102,6 @@ class Logger {
     this.info(`Presentation mode ${action} at slide ${slideIndex + 1}`);
   }
 
-  llmRequest(prompt: string, success: boolean, duration?: number): void {
-    if (success) {
-      this.info(`LLM request completed in ${duration}ms`);
-    } else {
-      this.warn('LLM request failed, using fallback');
-    }
-  }
-
   // Performance logging
   performance(operation: string, duration: number): void {
     if (duration > 1000) {
@@ -139,7 +131,6 @@ export const log = {
   exportComplete: logger.exportComplete.bind(logger),
   exportError: logger.exportError.bind(logger),
   presentationMode: logger.presentationMode.bind(logger),
-  llmRequest: logger.llmRequest.bind(logger),
   performance: logger.performance.bind(logger),
   security: logger.security.bind(logger),
 };

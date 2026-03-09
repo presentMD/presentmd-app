@@ -22,7 +22,7 @@ By Your Name
 
 ---
 
-<!-- Footer: "2025 | presentMD.com" -->
+<!-- Footer: "2026 | presentMD.com" -->
 ## This is a sample slide
 
 * Bullet 1
@@ -41,7 +41,6 @@ Red text on this slide
 
 const Index = () => {
   const [md, setMd] = useState<string>(initialMd);
-  const [showDiscussionPopup, setShowDiscussionPopup] = useState<boolean>(true);
   const [current, setCurrent] = useState(0);
   const [selectedTheme, setSelectedTheme] = useState<string>('default');
   
@@ -145,7 +144,7 @@ const Index = () => {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <div className="container py-8 space-y-8">
         <Header
           ref={headerRef}
@@ -155,10 +154,7 @@ const Index = () => {
           onEnterPresentationMode={enterPresentationMode}
         />
 
-        <CommunityBanner
-          show={showDiscussionPopup}
-          onClose={() => setShowDiscussionPopup(false)}
-        />
+        <CommunityBanner />
 
         <section className="flex gap-6 h-[calc(100vh-180px)]">
           <EditorPanel

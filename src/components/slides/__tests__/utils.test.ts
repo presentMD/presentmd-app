@@ -162,10 +162,10 @@ Content here`
       const slideContent = `# Slide Title
 Content
 
-<!-- footer: "2025 | presentMD.com" -->`
-      
+<!-- footer: "2026 | presentMD.com" -->`
+
       const footer = extractFooterContent(slideContent)
-      expect(footer).toBe('2025 | presentMD.com')
+      expect(footer).toBe('2026 | presentMD.com')
     })
 
     it('should return null when no footer found', () => {

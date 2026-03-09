@@ -79,6 +79,7 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
         {showCustomInput && (
           <div className="p-2 space-y-2">
             <Input
+              aria-label="Custom theme CSS URL"
               placeholder="https://..."
               value={customUrl}
               onChange={(e) => setCustomUrl(e.target.value)}

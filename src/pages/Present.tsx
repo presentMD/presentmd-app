@@ -25,7 +25,7 @@ export default function Present() {
   // Parse markdown into slides
   const slides = useMemo(() => parseSlides(md), [md]);
 
-  const [index, setIndex] = useState(Math.min(startIndex, Math.max(0, slides.length - 1)));
+  const [index, setIndex] = useState(Math.max(0, Math.min(startIndex, slides.length - 1)));
 
   useEffect(() => {
     document.title = `Presentation — Slide ${index + 1}/${slides.length}`;
@@ -54,7 +54,7 @@ export default function Present() {
   const goToNext = () => setIndex((i) => Math.min(i + 1, slides.length - 1));
 
   return (
-    <div className="fixed inset-0 w-screen h-screen bg-background text-foreground overflow-hidden">
+    <div id="main-content" tabIndex={-1} className="fixed inset-0 w-screen h-screen bg-background text-foreground overflow-hidden">
       {/* Custom CSS injection */}
       {customCss && (
         <style>{customCss}</style>

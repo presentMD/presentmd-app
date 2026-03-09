@@ -59,7 +59,8 @@ export const useThemeLoader = (initialTheme: string = 'default') => {
       document.head.appendChild(link);
     }
 
-    if (link.href !== href) {
+    const resolvedHref = new URL(href, window.location.origin).href;
+    if (link.href !== resolvedHref) {
       link.href = href;
     }
   }, [state.isCustomTheme, state.customCss, initialTheme]);
