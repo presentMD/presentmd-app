@@ -10,6 +10,7 @@ import { EditorPanel } from "@/components/features/EditorPanel";
 import { PreviewPanel } from "@/components/features/PreviewPanel";
 import { PresentationMode } from "@/components/features/PresentationMode";
 import { CommunityBanner } from "@/components/layout/CommunityBanner";
+import { AIGenerateModal } from "@/components/features/AIGenerateModal";
 
 const initialMd = `
 
@@ -43,6 +44,7 @@ const Index = () => {
   const [md, setMd] = useState<string>(initialMd);
   const [current, setCurrent] = useState(0);
   const [selectedTheme, setSelectedTheme] = useState<string>('default');
+  const [aiModalOpen, setAiModalOpen] = useState(false);
   
   const { toast } = useToast();
   
@@ -111,6 +113,11 @@ const Index = () => {
     presentationMode.exitPresentationMode();
   };
 
+  const handleInsertGenerated = (content: string) => {
+    setMd(content);
+    setCurrent(0);
+  };
+
   const handleExportToPowerPoint = async () => {
     try {
       await exportToPowerPoint(md, currentTheme, (message) => {
@@ -152,6 +159,7 @@ const Index = () => {
           onThemeChange={handleThemeChange}
           onExportToPowerPoint={handleExportToPowerPoint}
           onEnterPresentationMode={enterPresentationMode}
+          onGenerateWithAI={() => setAiModalOpen(true)}
         />
 
         <CommunityBanner />
@@ -190,6 +198,13 @@ const Index = () => {
           onExit={exitPresentationMode}
         />
       )}
+
+      {/* AI Generate Modal */}
+      <AIGenerateModal
+        open={aiModalOpen}
+        onOpenChange={setAiModalOpen}
+        onInsert={handleInsertGenerated}
+      />
     </main>
   );
 };

@@ -141,11 +141,6 @@ export default function SlideRenderer({ content, className = '', theme = default
       data-bg-image={backgroundImage ? 'true' : undefined}
       data-bg-position={backgroundImage?.position || undefined}
     >
-      {shouldLoadSpaceTheme && (
-        <style>
-          {`@import url('/themes/space.css');`}
-        </style>
-      )}
       {(customColor || customBackgroundColor) && (
         <style>
           {`

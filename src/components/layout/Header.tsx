@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Monitor } from 'lucide-react';
+import { Download, Monitor, Sparkles } from 'lucide-react';
 import HelpDialog from '../HelpDialog';
 import ThemeModeSwitcher from '../ThemeModeSwitcher';
 import ThemeSelector from '../ThemeSelector';
@@ -10,13 +10,15 @@ interface HeaderProps {
   onThemeChange: (theme: string) => void;
   onExportToPowerPoint: () => void;
   onEnterPresentationMode: () => void;
+  onGenerateWithAI: () => void;
 }
 
 export const Header = forwardRef<HTMLElement, HeaderProps>(({
   currentTheme,
   onThemeChange,
   onExportToPowerPoint,
-  onEnterPresentationMode
+  onEnterPresentationMode,
+  onGenerateWithAI,
 }, ref) => {
   return (
     <header ref={ref}>
@@ -54,14 +56,22 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({
             </span>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <HelpDialog />
           <ThemeModeSwitcher />
-          <ThemeSelector 
-            currentTheme={currentTheme} 
-            onThemeChange={onThemeChange} 
+          <ThemeSelector
+            currentTheme={currentTheme}
+            onThemeChange={onThemeChange}
           />
+          <Button
+            variant="outline"
+            onClick={onGenerateWithAI}
+            className="shadow-sm border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-400 dark:border-purple-800 dark:text-purple-400 dark:hover:bg-purple-950"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Generate with AI
+          </Button>
           <Button variant="outline" onClick={onExportToPowerPoint} className="shadow-sm">
             <Download className="w-4 h-4 mr-2" />
             Export as PowerPoint

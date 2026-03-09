@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { PRESENTATION_KEYS } from '@/constants';
+import { useState, useCallback, useRef } from 'react';
 import { log } from '@/lib/logger';
 
 export interface PresentationModeState {
@@ -52,36 +51,9 @@ export const usePresentationMode = (totalSlides: number): PresentationModeState 
     setPresentationSlideIndex(Math.max(0, Math.min(index, totalSlides - 1)));
   }, [totalSlides]);
 
-  // Keyboard navigation for presentation mode
-  useEffect(() => {
-    if (!isPresentationMode) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (PRESENTATION_KEYS.EXIT.includes(e.key)) {
-        e.preventDefault();
-        exitPresentationMode();
-        return;
-      }
-      
-      if (PRESENTATION_KEYS.NEXT.includes(e.key)) {
-        e.preventDefault();
-        goToNextSlide();
-      }
-      if (PRESENTATION_KEYS.PREV.includes(e.key)) {
-        e.preventDefault();
-        goToPreviousSlide();
-      }
-      if (PRESENTATION_KEYS.FIRST.includes(e.key.toLowerCase())) {
-        goToFirstSlide();
-      }
-      if (PRESENTATION_KEYS.LAST.includes(e.key.toLowerCase())) {
-        goToLastSlide();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPresentationMode, exitPresentationMode, goToNextSlide, goToPreviousSlide, goToFirstSlide, goToLastSlide]);
+  // Keyboard handling removed from this hook.
+  // PresentationMode.tsx registers its own stable listener via the ref pattern,
+  // which avoids the re-registration gap that caused dropped keypresses.
 
   return {
     isPresentationMode,
