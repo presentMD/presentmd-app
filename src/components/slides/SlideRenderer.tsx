@@ -7,6 +7,7 @@ import rehypeKatex from 'rehype-katex';
 import { cn } from '@/lib/utils';
 import { extractFooterContent, extractHeaderContent, cleanSlideContent, extractBackgroundImage, extractColorDirective, extractBackgroundColorDirective } from './utils';
 import { getSlideThemeConfig } from '@/config/themes';
+import { DiagramRenderer } from './DiagramRenderer';
 
 
 const defaultTheme = 'default';
@@ -219,7 +220,12 @@ export default function SlideRenderer({ content, className = '', theme = default
             ul: ({ children }) => <SlideList ordered={false} theme={t}>{children}</SlideList>,
             ol: ({ children }) => <SlideList ordered={true} theme={t}>{children}</SlideList>,
             li: ({ children }) => <SlideListItem theme={t}>{children}</SlideListItem>,
-            code: ({ inline, children, ...props }: { inline?: boolean; children: React.ReactNode; [key: string]: unknown }) => <SlideCode inline={inline} theme={t}>{children}</SlideCode>,
+            code: ({ inline, children, className, ...props }: { inline?: boolean; children: React.ReactNode; className?: string; [key: string]: unknown }) => {
+              if (!inline && (className ?? '').includes('language-diagram')) {
+                return <DiagramRenderer content={String(children).trim()} theme={t} />;
+              }
+              return <SlideCode inline={inline} theme={t}>{children}</SlideCode>;
+            },
             blockquote: ({ children }) => <SlideBlockquote theme={t}>{children}</SlideBlockquote>,
           }}
         >

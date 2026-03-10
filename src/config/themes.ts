@@ -72,24 +72,16 @@ export const THEME_CONFIGS: Record<string, ThemeConfig> = {
     background: { type: 'solid', color: '#ffffff' },
     backgroundImage: undefined,
     titleBackgroundImage: undefined,
-    titleColor: '#246',
-    textColor: '#222',
-    accentColor: '#48c',
-    fontFamily: 'Red Hat Display',
-    titleFontFamily: 'Red Hat Display',
-    textFontFamily: 'Red Hat Display',
+    titleColor: '#1F3864',   // Office Theme: Dark Blue, Text 2
+    textColor: '#242424',
+    accentColor: '#4472C4',  // Office Blue
+    fontFamily: 'Calibri',
+    titleFontFamily: 'Calibri',
+    textFontFamily: 'Calibri',
     titleFontSize: PPTX_CONFIG.FONTS.TITLE_SIZE,
     textFontSize: PPTX_CONFIG.FONTS.TEXT_SIZE,
     titleStyle: { bold: true, italic: false },
     textStyle: { bold: false, italic: false },
-    gradient: {
-      type: 'linear',
-      angle: 135,
-      stops: [
-        { position: 0, color: '#ffffff' },
-        { position: 100, color: '#f8fafc' }
-      ]
-    }
   }
 };
 
@@ -125,15 +117,15 @@ export const SLIDE_THEME_CONFIGS = {
     link: 'underline text-[#c29240] hover:text-[#9f811f]',
   },
   default: {
-    root: 'bg-white text-black font-sans',
-    heading: 'font-semibold text-black',
-    paragraph: 'text-lg mb-5 text-black',
-    code: 'bg-gray-100 text-black px-2 py-1 rounded font-mono',
-    pre: 'bg-gray-50 rounded-lg p-4 mb-6 font-mono',
-    blockquote: 'border-l-4 border-gray-300 bg-gray-50 pl-6 italic my-6 text-base md:text-lg text-black',
-    list: 'list-disc pl-6 text-base text-black',
-    listItem: 'mb-1 text-black',
-    link: 'text-blue-600 hover:text-blue-800 underline',
+    root: 'bg-white text-[#242424] font-sans',
+    heading: 'font-bold text-[#1F3864]',
+    paragraph: 'text-[#242424] mb-4 leading-relaxed',
+    code: 'bg-[#EEF1F6] text-[#242424] px-[0.4em] py-[0.15em] rounded font-mono text-[0.87em]',
+    pre: 'bg-[#F5F7FA] border border-[#E2E8F0] rounded-md p-4 mb-4 font-mono text-[0.84em]',
+    blockquote: 'border-l-[3px] border-[#4472C4] bg-[#F0F4FB] pl-5 py-1 italic my-3 text-[#2E4A7A] rounded-r',
+    list: 'list-disc pl-6 text-[#242424]',
+    listItem: 'mb-2 text-[#242424]',
+    link: 'text-[#2563EB] hover:text-[#1D4ED8] underline',
   },
 };
 
