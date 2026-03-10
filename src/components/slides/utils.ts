@@ -173,26 +173,34 @@ export function extractBackgroundImage(slideContent: string): { url: string; pos
 
 // Clean slide content by removing frontmatter and speaker notes
 export function cleanSlideContent(slideContent: string): string {
-  let cleaned = slideContent;
-  
+  // Protect inline code spans FIRST — before any stripping — so that directive
+  // patterns inside backtick spans (e.g. `<!-- _class: lead -->` in a table
+  // cell) are never accidentally removed by the regexes below.
+  const codeSpans: string[] = [];
+  let cleaned = slideContent.replace(/`[^`\n]+`/g, (match) => {
+    const placeholder = `\x00CSPAN${codeSpans.length}\x00`;
+    codeSpans.push(match);
+    return placeholder;
+  });
+
   // Remove frontmatter (lines starting with key:)
   cleaned = cleaned.replace(/^(theme|title|class|paginate|marp|size|author|date):\s*.*$/gm, '');
-  
-  // Remove _class directives (they're used for slide styling, not content)
-  cleaned = cleaned.replace(/<!--\s*_class:\s*.*?\s*-->/g, '');
 
-  // Remove other HTML comments (including footer and header comments)
+  // Remove ALL HTML directive comments (_class, footer, header, _color, etc.)
   cleaned = cleaned.replace(/<!--.*?-->/gs, '');
-  
+
   // Remove background image syntax (used for styling, not content)
   cleaned = cleaned.replace(/!\[bg(?:\s+(left|right|fit|cover|contain))?\]\([^)]+\)/gi, '');
-  
+
   // Remove "Notes:" sections
   cleaned = cleaned.replace(/Notes:\s*.*?(?=\n\n|\n---|$)/gs, '');
-  
+
+  // Restore code spans
+  cleaned = cleaned.replace(/\x00CSPAN(\d+)\x00/g, (_, i) => codeSpans[parseInt(i)]);
+
   // Clean up extra whitespace
   cleaned = cleaned.replace(/\n{3,}/g, '\n\n').trim();
-  
+
   return cleaned;
 }
 

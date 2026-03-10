@@ -220,11 +220,36 @@ export default function SlideRenderer({ content, className = '', theme = default
             ul: ({ children }) => <SlideList ordered={false} theme={t}>{children}</SlideList>,
             ol: ({ children }) => <SlideList ordered={true} theme={t}>{children}</SlideList>,
             li: ({ children }) => <SlideListItem theme={t}>{children}</SlideListItem>,
-            code: ({ inline, children, className, ...props }: { inline?: boolean; children: React.ReactNode; className?: string; [key: string]: unknown }) => {
-              if (!inline && (className ?? '').includes('language-diagram')) {
+            // react-markdown v10 removed the `inline` prop from the code
+            // component.  Block code (fenced) always has a `language-*`
+            // className; inline code never does.  We use that to distinguish
+            // the two cases and register a custom `pre` component below so
+            // that block code does not end up double-wrapped.
+            pre: ({ children }: { children: React.ReactNode }) => {
+              // Don't wrap diagram blocks in a styled <pre> — DiagramRenderer
+              // renders its own container.
+              const firstChild = React.Children.toArray(children)[0];
+              if (
+                React.isValidElement(firstChild) &&
+                typeof (firstChild.props as { className?: string }).className === 'string' &&
+                (firstChild.props as { className?: string }).className?.includes('language-diagram')
+              ) {
+                return <>{children}</>;
+              }
+              return <pre className={getSlideThemeConfig(t).pre}>{children}</pre>;
+            },
+            code: ({ children, className }: { children: React.ReactNode; className?: string }) => {
+              const isBlock = !!className; // language-* class ⇒ fenced block
+              if (isBlock && (className ?? '').includes('language-diagram')) {
                 return <DiagramRenderer content={String(children).trim()} theme={t} />;
               }
-              return <SlideCode inline={inline} theme={t}>{children}</SlideCode>;
+              // Inline code → full styled chip
+              if (!isBlock) {
+                return <code className={getSlideThemeConfig(t).code}>{children}</code>;
+              }
+              // Block code → let the custom <pre> handle the container; only
+              // apply monospace so text colour is inherited from the pre style.
+              return <code className="font-mono">{children}</code>;
             },
             blockquote: ({ children }) => <SlideBlockquote theme={t}>{children}</SlideBlockquote>,
           }}
