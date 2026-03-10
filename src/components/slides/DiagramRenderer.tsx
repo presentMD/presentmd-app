@@ -122,43 +122,113 @@ function ProcessDiagram({ items, accent }: { items: DiagramItem[]; accent: strin
 
 // ─── Cycle ────────────────────────────────────────────────────────────────────
 function CycleDiagram({ items, accent }: { items: DiagramItem[]; accent: string }) {
+  const n = items.length;
+  if (n === 0) return null;
+
+  // ── Layout constants ───────────────────────────────────────────────────────
+  const SIZE    = 300;                          // SVG viewBox side length
+  const CX      = SIZE / 2;                    // centre X
+  const CY      = SIZE / 2;                    // centre Y
+  const RING_R  = 98;                          // ring radius (centre → circle centre)
+  // Shrink circles when there are many items so they don't overlap
+  const CIRC_R  = Math.min(46, RING_R * 0.45 - Math.max(0, (n - 4) * 3));
+
+  // Angle for item i, measured clockwise from 12 o'clock
+  const theta = (i: number) => (i / n) * 2 * Math.PI - Math.PI / 2;
+
+  // Radians to skip over each circle + a small gap before drawing the arc
+  const arcGap = Math.asin(Math.min(CIRC_R / RING_R, 0.999)) + 0.14;
+
+  const positions = Array.from({ length: n }, (_, i) => ({
+    x: CX + RING_R * Math.cos(theta(i)),
+    y: CY + RING_R * Math.sin(theta(i)),
+  }));
+
+  const arcs = Array.from({ length: n }, (_, i) => {
+    const j  = (i + 1) % n;
+    const a0 = theta(i);
+    // Ensure the next angle is always greater (clockwise wrap for last → first)
+    const a1 = j > i ? theta(j) : theta(j) + 2 * Math.PI;
+    const sa = a0 + arcGap;
+    const ea = a1 - arcGap;
+    return {
+      sx: CX + RING_R * Math.cos(sa),
+      sy: CY + RING_R * Math.sin(sa),
+      ex: CX + RING_R * Math.cos(ea),
+      ey: CY + RING_R * Math.sin(ea),
+      largeArc: ea - sa > Math.PI ? 1 : 0,
+    };
+  });
+
+  // Stable marker ID scoped to this accent colour
+  const markerId = `ca${accent.replace(/[^a-z0-9]/gi, '')}`;
+  const arrowColor = 'rgba(155, 170, 185, 0.9)';
+  const fontSize   = Math.max(9, 14 - Math.max(0, n - 3));
+
   return (
-    <div className="my-4">
-      <div className="flex flex-wrap items-center justify-center gap-y-3">
-        {items.map((item, i) => (
-          <React.Fragment key={i}>
-            <div
-              className="flex items-center justify-center rounded-full px-5 py-2.5
-                         min-w-[80px] text-center shadow-sm"
-              style={{ backgroundColor: accent }}
-            >
-              <span className="text-white text-xs font-semibold leading-snug">
-                {item.text}
-              </span>
-            </div>
+    <div className="my-4 flex justify-center w-full">
+      <svg
+        viewBox={`0 0 ${SIZE} ${SIZE}`}
+        style={{ width: '100%', maxWidth: 400, height: 'auto' }}
+        aria-label="Cycle diagram"
+      >
+        <defs>
+          <marker
+            id={markerId}
+            markerWidth="7" markerHeight="7"
+            refX="6.5" refY="3.5"
+            orient="auto"
+          >
+            {/* Solid filled arrowhead */}
+            <path d="M0,0.5 L6.5,3.5 L0,6.5 Z" fill={arrowColor} />
+          </marker>
+        </defs>
 
-            {/* Arrow between items; ↺ after the last one to show it loops back */}
-            <span
-              className="text-xl leading-none select-none mx-1"
-              style={{ color: withAlpha(accent, i === items.length - 1 ? 1 : 0.55) }}
-            >
-              {i === items.length - 1 ? '↺' : '›'}
-            </span>
-          </React.Fragment>
+        {/* Curved arcs (clockwise) */}
+        {arcs.map(({ sx, sy, ex, ey, largeArc }, i) => (
+          <path
+            key={i}
+            d={`M${sx},${sy} A${RING_R},${RING_R} 0 ${largeArc},1 ${ex},${ey}`}
+            fill="none"
+            stroke={arrowColor}
+            strokeWidth="2.5"
+            markerEnd={`url(#${markerId})`}
+          />
         ))}
-      </div>
 
-      {/* Dashed arc below to reinforce the cyclic nature */}
-      <div className="mx-auto mt-1 px-8" style={{ maxWidth: '85%' }}>
-        <div
-          style={{
-            border: `1.5px dashed ${withAlpha(accent, 0.28)}`,
-            borderTop: 'none',
-            borderRadius: '0 0 50% 50%',
-            height: '14px',
-          }}
-        />
-      </div>
+        {/* Circles */}
+        {positions.map((pos, i) => (
+          <circle key={i} cx={pos.x} cy={pos.y} r={CIRC_R} fill={accent} />
+        ))}
+
+        {/* Labels via foreignObject so text wraps naturally */}
+        {positions.map((pos, i) => (
+          <foreignObject
+            key={i}
+            x={pos.x - CIRC_R}
+            y={pos.y - CIRC_R}
+            width={CIRC_R * 2}
+            height={CIRC_R * 2}
+          >
+            <div
+              style={{
+                width: '100%', height: '100%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'white',
+                fontSize: `${fontSize}px`,
+                fontWeight: 600,
+                textAlign: 'center',
+                lineHeight: 1.25,
+                padding: '5px',
+                boxSizing: 'border-box',
+                wordBreak: 'break-word',
+              }}
+            >
+              {items[i].text}
+            </div>
+          </foreignObject>
+        ))}
+      </svg>
     </div>
   );
 }

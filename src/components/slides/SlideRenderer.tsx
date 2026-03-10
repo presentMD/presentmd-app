@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -83,7 +83,44 @@ export default function SlideRenderer({ content, className = '', theme = default
   
   // Clean the content for rendering
   const cleanedContent = cleanSlideContent(content);
-  
+
+  // ── Auto-fit content to the available slide area ────────────────────────
+  // Thumbnails are already scaled by their outer container, so skip them.
+  // For preview and presentation modes, apply CSS `zoom` to the inner content
+  // wrapper so that overflowing content shrinks proportionally to fit.
+  const sectionRef = useRef<HTMLElement>(null);
+  const innerRef   = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isThumbnail) return;
+    const section = sectionRef.current;
+    const inner   = innerRef.current;
+    if (!section || !inner) return;
+
+    let raf: number;
+    const fit = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        inner.style.zoom = ''; // reset first so we measure the natural size
+        const avail   = inner.clientHeight;
+        const natural = inner.scrollHeight;
+        if (natural > avail && avail > 0) {
+          inner.style.zoom = (avail / natural).toFixed(4);
+        }
+      });
+    };
+
+    const ro = new ResizeObserver(fit);
+    ro.observe(section);
+    fit();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      if (innerRef.current) innerRef.current.style.zoom = '';
+    };
+  }, [cleanedContent, isThumbnail]); // re-run when content or mode changes
+
   const rootClass = cn(
     getSlideThemeConfig(t).root, 
     className?.includes('presentation-mode') ? "p-16 flex flex-col justify-center h-full w-full" : "p-8 flex flex-col justify-center h-full w-full",
@@ -130,7 +167,8 @@ export default function SlideRenderer({ content, className = '', theme = default
 
 
   return (
-    <section 
+    <section
+      ref={sectionRef}
       className={rootClass}
       style={{...backgroundImageStyle, ...customColorStyle, ...customBackgroundColorStyle}}
       data-marp-theme={shouldLoadSpaceTheme ? 'space' : undefined}
@@ -190,7 +228,8 @@ export default function SlideRenderer({ content, className = '', theme = default
       )}
       
       {/* Content wrapper for split layouts */}
-      <div 
+      <div
+        ref={innerRef}
         className={cn(
           backgroundImage && (backgroundImage.position === 'left' || backgroundImage.position === 'right') 
             ? "flex-1 flex flex-col justify-center p-8 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg relative z-10" 
