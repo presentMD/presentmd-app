@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import SlideRenderer from '@/components/slides/SlideRenderer';
@@ -76,12 +76,34 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({
     return () => window.removeEventListener('keydown', onKey);
   }, []); // ← empty: stable for the lifetime of the overlay
 
-  // ── Focus the Next button on mount ─────────────────────────────────────────
-  // useLayoutEffect runs synchronously before paint so the button is focusable
-  // the moment the overlay appears (no waiting for an async useEffect).
-  const nextBtnRef = useRef<HTMLButtonElement>(null);
+  // ── Controls visibility ─────────────────────────────────────────────────────
+  // Show on mouse move; auto-hide 3 s after the last movement (or immediately
+  // when the cursor leaves the container).  Keyboard shortcuts work via the
+  // window handler regardless, so keyboard-only presenters are unaffected.
+  const [controlsVisible, setControlsVisible] = useState(false);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMouseMove = () => {
+    setControlsVisible(true);
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => setControlsVisible(false), 3000);
+  };
+
+  const handleMouseLeave = () => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    setControlsVisible(false);
+  };
+
+  // Clear the timer if the component unmounts while it's running.
+  useEffect(() => () => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+  }, []);
+
+  // ── Focus the dialog container on mount ────────────────────────────────────
+  const containerRef = useRef<HTMLDivElement>(null);
+  const nextBtnRef   = useRef<HTMLButtonElement>(null); // kept for aria wiring
   useLayoutEffect(() => {
-    nextBtnRef.current?.focus();
+    containerRef.current?.focus();
   }, []);
 
   const currentSlide = slides[presentationSlideIndex] || '';
@@ -98,15 +120,20 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({
 
   return (
     <div
-      className="fixed inset-0 w-screen h-screen bg-background text-foreground overflow-hidden z-50"
+      ref={containerRef}
+      tabIndex={-1}
+      className="fixed inset-0 w-screen h-screen bg-background text-foreground overflow-hidden z-50 outline-none"
       role="dialog"
       aria-modal="true"
       aria-label={`Presentation — slide ${presentationSlideIndex + 1} of ${slides.length}`}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
       {customCss && <style>{customCss}</style>}
 
       {/* ── Exit button — top right ────────────────────────────────────────── */}
-      <div className="absolute top-0 right-0 z-20 p-4">
+      {/* Hidden until the presenter moves the mouse                            */}
+      <div className={`absolute top-0 right-0 z-20 p-4 transition-opacity duration-700 ${controlsVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         <Button
           variant="ghost"
           size="icon"
@@ -120,9 +147,10 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({
       </div>
 
       {/* ── Bottom navigation bar ──────────────────────────────────────────── */}
+      {/* Hidden until the presenter moves the mouse — slide fills 100%        */}
       <nav
         aria-label="Slide navigation"
-        className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/70 to-transparent pt-10 pb-4 px-4"
+        className={`absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/70 to-transparent pt-10 pb-4 px-4 transition-opacity duration-700 ${controlsVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
       >
         <div className="flex items-center justify-center gap-4">
 

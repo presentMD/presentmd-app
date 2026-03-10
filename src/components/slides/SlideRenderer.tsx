@@ -37,11 +37,11 @@ const SlideParagraph = ({ children, theme }: { children: React.ReactNode; theme:
 
 const SlideList = ({ ordered, children, theme }: { ordered: boolean; children: React.ReactNode; theme: string }) => {
   const ListTag = ordered ? 'ol' : 'ul';
-  return React.createElement(
-    ListTag,
-    { className: getSlideThemeConfig(theme).list },
-    children
-  );
+  // Theme list classes use `list-disc`; swap to `list-decimal` for ordered lists.
+  const className = ordered
+    ? getSlideThemeConfig(theme).list.replace('list-disc', 'list-decimal')
+    : getSlideThemeConfig(theme).list;
+  return React.createElement(ListTag, { className }, children);
 };
 
 const SlideListItem = ({ children, theme }: { children: React.ReactNode; theme: string }) => (
