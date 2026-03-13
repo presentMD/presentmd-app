@@ -1,21 +1,12 @@
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
+import { initGA } from './lib/analytics'
 
+// __GA_ID__ is injected at build time by vite.config.ts from the
+// GOOGLE_ANALYTICS_ID environment variable.  Falls back to '' when unset.
 declare const __GA_ID__: string;
 
-function initGA() {
-  if (!__GA_ID__) return;
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${__GA_ID__}`;
-  document.head.appendChild(script);
-  (window as any).dataLayer = (window as any).dataLayer || [];
-  function gtag(...args: any[]) { (window as any).dataLayer.push(args); }
-  gtag('js', new Date());
-  gtag('config', __GA_ID__);
-}
-
-initGA();
+initGA(typeof __GA_ID__ !== 'undefined' ? __GA_ID__ : '');
 
 createRoot(document.getElementById("root")!).render(<App />);

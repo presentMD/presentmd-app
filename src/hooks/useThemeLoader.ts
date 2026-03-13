@@ -161,7 +161,7 @@ export const useThemeLoader = (initialTheme: string = 'default') => {
   // Handle theme change by updating state and loading CSS
   const handleThemeChange = useCallback(async (theme: string) => {
     setState(prev => ({ ...prev, isLoading: true, error: undefined }));
-    
+
     if (theme === 'custom') {
       // When marking as custom, don't load new CSS
       setState(prev => ({
@@ -170,23 +170,20 @@ export const useThemeLoader = (initialTheme: string = 'default') => {
         isLoading: false,
       }));
     } else {
-      // Load new theme CSS
-      const result = await handleAsyncError(
-        async () => {
-          const css = await loadThemeCss(theme);
-          setState(prev => ({
-            ...prev,
-            customCss: css,
-            isCustomTheme: false,
-            baseThemeName: undefined,
-            isLoading: false,
-          }));
-        },
-        'useThemeLoader.handleThemeChange'
-      );
-
-      if (!result) {
-        setState(prev => ({ ...prev, isLoading: false }));
+      // Load new theme CSS – catch errors directly so we can surface them in
+      // the `error` state field (loadThemeCss already toasts on failure).
+      try {
+        const css = await loadThemeCss(theme);
+        setState(prev => ({
+          ...prev,
+          customCss: css,
+          isCustomTheme: false,
+          baseThemeName: undefined,
+          isLoading: false,
+        }));
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to load theme';
+        setState(prev => ({ ...prev, isLoading: false, error: message }));
       }
     }
   }, [loadThemeCss]);

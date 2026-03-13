@@ -232,23 +232,24 @@ Content`
 
   describe('extractBackgroundImage', () => {
     it('should extract background image with position', () => {
-      const slideContent = `![bg left](image.jpg)
+      // The function requires an absolute or scheme-relative URL
+      const slideContent = `![bg left](/images/photo.jpg)
 # Slide Title`
-      
+
       const bgImage = extractBackgroundImage(slideContent)
       expect(bgImage).toEqual({
-        url: 'image.jpg',
+        url: '/images/photo.jpg',
         position: 'left'
       })
     })
 
     it('should extract background image without position', () => {
-      const slideContent = `![bg](image.jpg)
+      const slideContent = `![bg](https://example.com/bg.jpg)
 # Slide Title`
-      
+
       const bgImage = extractBackgroundImage(slideContent)
       expect(bgImage).toEqual({
-        url: 'image.jpg',
+        url: 'https://example.com/bg.jpg',
         position: 'cover'
       })
     })
@@ -272,15 +273,20 @@ Content`
       expect(cleaned).toContain('Slide Title')
     })
 
-    it('should remove HTML comments except _class directives', () => {
+    it('should remove ALL HTML comments (including _class directives)', () => {
+      // cleanSlideContent strips every <!-- … --> block so that the rendered
+      // output contains only visible slide content.  Structural classes like
+      // _class are consumed earlier by determineSlideClass / SlideRenderer.
       const slideContent = `<!-- _class: lead -->
 # Slide Title
 <!-- This is a comment -->
 Content`
-      
+
       const cleaned = cleanSlideContent(slideContent)
-      expect(cleaned).toContain('_class: lead')
+      expect(cleaned).not.toContain('_class: lead')
       expect(cleaned).not.toContain('This is a comment')
+      expect(cleaned).toContain('Slide Title')
+      expect(cleaned).toContain('Content')
     })
 
     it('should remove background image syntax', () => {

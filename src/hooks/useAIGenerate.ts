@@ -112,6 +112,7 @@ export function useAIGenerate() {
       `Create a ${slideCount}-slide presentation about: ${prompt.trim()}\n\n` +
       `Generate the presentation as markdown following the presentMD format.`;
 
+    /* v8 ignore start -- live streaming paths require a real provider connection */
     try {
       // ── Anthropic path (native SDK, adaptive thinking) ──────────────────
       if (providerId === 'anthropic') {
@@ -202,6 +203,7 @@ export function useAIGenerate() {
       setIsGenerating(false);
       abortFnRef.current = null;
     }
+    /* v8 ignore stop */
   }, [providerId, apiKeys, ollamaHost, ollamaModel]);
 
   const stop = useCallback(() => {
