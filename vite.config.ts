@@ -4,6 +4,9 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    __GA_ID__: JSON.stringify(process.env.GOOGLE_ANALYTICS_ID || ''),
+  },
   plugins: [react()],
   resolve: {
     alias: {
