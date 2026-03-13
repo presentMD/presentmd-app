@@ -128,14 +128,38 @@ theme: space
   })
 
   describe('extractSpeakerNotes', () => {
-    it('should extract notes from HTML comments', () => {
+    it('should extract notes from <!-- Notes: ... --> comments', () => {
       const slideContent = `# Slide Title
 Content here
 
-<!-- This is a speaker note -->`
-      
+<!-- Notes: This is a speaker note -->`
+
       const notes = extractSpeakerNotes(slideContent)
       expect(notes).toBe('This is a speaker note')
+    })
+
+    it('should not extract directive comments as notes', () => {
+      const slideContent = `<!-- _class: lead -->
+# Title
+
+<!-- footer: "My Footer" -->`
+
+      const notes = extractSpeakerNotes(slideContent)
+      expect(notes).toBe('')
+    })
+
+    it('should extract multi-line Notes comments', () => {
+      const slideContent = `## Slide
+
+- bullet
+
+<!-- Notes:
+Line one.
+Line two.
+-->`
+
+      const notes = extractSpeakerNotes(slideContent)
+      expect(notes).toBe('Line one.\nLine two.')
     })
 
     it('should extract notes from Notes: sections', () => {

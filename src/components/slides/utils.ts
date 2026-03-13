@@ -124,11 +124,23 @@ export function extractTheme(markdown: string): string {
   return themeMatch ? themeMatch[1].replace(/['"]/g, '').trim() : 'default';
 }
 
-// Extract speaker notes from slide content
+// Extract speaker notes from slide content.
+// Recognises two formats:
+//   <!-- Notes: text -->   (preferred — explicit notes comment)
+//   Notes: text            (plain text section)
+// Plain HTML comments without the "Notes:" prefix are intentionally ignored
+// so that directive comments (<!-- _class: lead -->, <!-- footer: ... -->, etc.)
+// are never mistakenly treated as speaker notes.
 export function extractSpeakerNotes(slideContent: string): string {
-  // Look for HTML comments or "Notes:" sections
-  const notesMatch = slideContent.match(/<!--\s*([\s\S]*?)\s*-->|Notes:\s*(.*?)(?:\n\n|\n---|$)/s);
-  return notesMatch ? (notesMatch[1] || notesMatch[2] || '').trim() : '';
+  // Preferred: <!-- Notes: ... --> (multi-line supported)
+  const commentMatch = slideContent.match(/<!--\s*Notes:\s*([\s\S]*?)\s*-->/i);
+  if (commentMatch) return commentMatch[1].trim();
+
+  // Fallback: bare "Notes:" text section
+  const sectionMatch = slideContent.match(/Notes:\s*(.*?)(?:\n\n|\n---|$)/s);
+  if (sectionMatch) return sectionMatch[1].trim();
+
+  return '';
 }
 
 // Extract footer content from slide
