@@ -75,9 +75,7 @@ export class ErrorBoundary extends Component<Props, State> {
 export const AppErrorBoundary: React.FC<{ children: ReactNode }> = ({ children }) => (
   <ErrorBoundary
     onError={(error, errorInfo) => {
-      // Log to external service in production
       if (process.env.NODE_ENV === 'production') {
-        // TODO: Add error reporting service
         console.error('App Error:', error, errorInfo);
       }
     }}

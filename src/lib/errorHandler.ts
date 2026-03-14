@@ -71,12 +71,6 @@ export const handleError = (
     });
   }
 
-  // In production, you might want to send to error reporting service
-  if (process.env.NODE_ENV === 'production') {
-    // TODO: Add error reporting service (e.g., Sentry)
-    // reportError(appError);
-  }
-
   return appError;
 };
 
@@ -126,4 +120,3 @@ export const handleExportError = (error: unknown): void => {
     }
   });
 };
-

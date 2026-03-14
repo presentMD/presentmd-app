@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import CodeMirror from '@uiw/react-codemirror';
 import { css } from '@codemirror/lang-css';
 import { oneDark } from '@codemirror/theme-one-dark';

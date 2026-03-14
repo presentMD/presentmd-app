@@ -3,7 +3,6 @@ type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 interface LoggerConfig {
   level: LogLevel;
   enableConsole: boolean;
-  enableRemote: boolean;
 }
 
 class Logger {
@@ -13,7 +12,6 @@ class Logger {
     this.config = {
       level: process.env.NODE_ENV === 'development' ? 'debug' : 'warn',
       enableConsole: process.env.NODE_ENV === 'development',
-      enableRemote: process.env.NODE_ENV === 'production',
     };
   }
 
@@ -55,10 +53,6 @@ class Logger {
       }
     }
 
-    if (this.config.enableRemote) {
-      // In production, you might want to send logs to a remote service
-      // this.sendToRemoteService(level, formattedMessage, args);
-    }
   }
 
   debug(message: string, ...args: unknown[]): void {

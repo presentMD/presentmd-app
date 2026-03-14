@@ -349,7 +349,9 @@ const addSlideToPresentation = async (
       slide.background = { data: bgImgData } as PptxGenJS.BackgroundProps;
     }
   } else if (themeConfig.gradient) {
-    slide.background = themeConfig.gradient as unknown as PptxGenJS.BackgroundProps;
+    // PptxGenJS BackgroundProps does not support gradients; use the first stop color as fallback
+    const fallback = normalizeColor(themeConfig.gradient.stops[0]?.color, 'FFFFFF');
+    slide.background = { color: fallback, type: 'solid' } as PptxGenJS.BackgroundProps;
   } else {
     slide.background = {
       color: normalizeColor(themeConfig.background.color, 'FFFFFF'),
