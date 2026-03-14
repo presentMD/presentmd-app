@@ -107,6 +107,18 @@ describe('useThemeLoader', () => {
     expect(global.fetch).not.toHaveBeenCalled()
   })
 
+  it('should mark theme as custom without fetching CSS when theme is "custom"', async () => {
+    const { result } = renderHook(() => useThemeLoader('default'))
+
+    await act(async () => {
+      await result.current.handleThemeChange('custom')
+    })
+
+    expect(result.current.isCustomTheme).toBe(true)
+    expect(result.current.isLoading).toBe(false)
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+
   it('should reset state', () => {
     const { result } = renderHook(() => useThemeLoader('default'))
     

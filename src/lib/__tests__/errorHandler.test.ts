@@ -107,6 +107,34 @@ describe('handleError', () => {
     const result = handleError(new Error('e'), 'ctx', { showToast: false })
     expect(result.context.timestamp).toBeInstanceOf(Date)
   })
+
+  it('passes an AppError through unchanged rather than re-wrapping it', () => {
+    const original = new AppError('already wrapped', { action: 'test' })
+    const result = handleError(original, 'ctx', { showToast: false })
+    expect(result).toBe(original)
+    expect(result.message).toBe('already wrapped')
+  })
+
+  it('logs to console in development when logToConsole is true', () => {
+    vi.stubEnv('NODE_ENV', 'development')
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const inner = new Error('inner cause')
+    handleError(inner, 'ctx', { showToast: false, logToConsole: true })
+    expect(spy).toHaveBeenCalled()
+    spy.mockRestore()
+    vi.unstubAllEnvs()
+  })
+
+  it('logs both error and originalError when logToConsole is true in development', () => {
+    vi.stubEnv('NODE_ENV', 'development')
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const inner = new Error('original')
+    handleError(inner, 'ctx', { showToast: false, logToConsole: true })
+    // Two console.error calls: one for the AppError, one for originalError
+    expect(spy).toHaveBeenCalledTimes(2)
+    spy.mockRestore()
+    vi.unstubAllEnvs()
+  })
 })
 
 describe('handleAsyncError', () => {

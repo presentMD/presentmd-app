@@ -58,6 +58,26 @@ Content`
       expect(slides[0]).toContain('Slide 1')
     })
 
+    it('should clear persistent footer when an empty footer directive is encountered', () => {
+      const markdown = `<!-- footer: "Persistent" -->
+# Slide 1
+
+---
+
+# Slide 2
+
+---
+
+<!-- footer: "" -->
+# Slide 3 – footer cleared`
+
+      const slides = parseSlides(markdown)
+      expect(slides[0]).toContain('footer: "Persistent"')
+      expect(slides[1]).toContain('footer: "Persistent"')
+      // Slide 3 sets footer to "" which should clear it — no footer injected
+      expect(slides[2]).not.toMatch(/footer: "Persistent"/)
+    })
+
     it('should handle persistent header and footer', () => {
       const markdown = `<!-- header: "My Header" -->
 # Slide 1
