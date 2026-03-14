@@ -149,6 +149,9 @@ const parseSlideData = (rawSlide: string, index: number): SlideData => {
   let inCodeBlock = false;
   let codeLines: string[] = [];
 
+  // multi-line HTML comment state (e.g. <!-- Notes: ... -->)
+  let inHtmlComment = false;
+
   // table state
   let inTable = false;
   let tableHeaders: string[] = [];
@@ -166,6 +169,17 @@ const parseSlideData = (rawSlide: string, index: number): SlideData => {
   };
 
   for (const rawLine of lines) {
+    // ── multi-line HTML comment passthrough ───────────────────────────────────
+    if (inHtmlComment) {
+      if (rawLine.includes('-->')) inHtmlComment = false;
+      continue;
+    }
+    // Detect start of a multi-line HTML comment (opening tag has no closing -->)
+    if (rawLine.trim().startsWith('<!--') && !rawLine.includes('-->')) {
+      inHtmlComment = true;
+      continue;
+    }
+
     // ── code block fencing ────────────────────────────────────────────────────
     if (rawLine.trim().startsWith('```')) {
       if (inTable) flushTable();
